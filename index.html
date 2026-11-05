@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ISE 5204 Project Tracker</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<style>
+:root{--bg:#f5f6f8;--card:#fff;--ink:#1d2330;--mut:#5b6475;--line:#dde1e8;--acc:#2f5fd0;--ok:#1f8f4e;--bad:#c0392b;--warn:#d9822b;--ext:#d9822b;--chip:#eaeefb}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12151c;--card:#1b202b;--ink:#e6e9f0;--mut:#9aa3b5;--line:#2c3342;--acc:#7ea2ff;--ok:#4cc27d;--bad:#ef6b5b;--warn:#f0a050;--ext:#f0a050;--chip:#26304a}}
+:root[data-theme="dark"]{--bg:#12151c;--card:#1b202b;--ink:#e6e9f0;--mut:#9aa3b5;--line:#2c3342;--acc:#7ea2ff;--ok:#4cc27d;--bad:#ef6b5b;--warn:#f0a050;--ext:#f0a050;--chip:#26304a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,Segoe UI,Roboto,sans-serif}
+header{padding:20px 16px 8px;max-width:1150px;margin:auto}
+h1{margin:0 0 4px;font-size:24px}
+.sub{color:var(--mut);font-size:13px}
+main{max-width:1150px;margin:auto;padding:0 16px 60px}
+nav{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding:8px 16px}
+nav .in{max-width:1150px;margin:auto;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+nav a{font-size:12.5px;padding:4px 10px;border-radius:14px;background:var(--chip);color:var(--ink);text-decoration:none}
+nav button{margin-left:auto}
+section{background:var(--card);border:1px solid var(--line);border-radius:10px;margin:14px 0;overflow:hidden}
+section>summary,section>h2{margin:0;padding:12px 16px;font-size:17px;font-weight:600;cursor:pointer;list-style:none}
+section[open]>summary{border-bottom:1px solid var(--line)}
+summary::-webkit-details-marker{display:none}
+summary:before{content:"▸ ";color:var(--mut)}details[open]>summary:before{content:"▾ "}
+.body{padding:14px 16px}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.tile{border:1px solid var(--line);border-radius:8px;padding:10px 12px;background:var(--bg)}
+.tile b{display:block;font-size:12px;color:var(--mut);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.tile span{font-size:15px}
+.big{font-size:26px;font-weight:700}
+.bar{height:12px;background:var(--line);border-radius:6px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--ok);width:0;transition:width .3s}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
+th{background:var(--chip)}
+.tblwrap{overflow-x:auto}
+a{color:var(--acc)}a.ext{color:var(--ext)}
+.badge{display:inline-block;font-size:11px;font-weight:700;padding:1px 8px;border-radius:10px;color:#fff;white-space:nowrap}
+.b-ok{background:var(--ok)}.b-bad{background:var(--bad)}.b-warn{background:var(--warn)}.b-acc{background:var(--acc)}
+.chip{display:inline-block;font-size:11.5px;padding:1px 8px;border-radius:10px;background:var(--chip);margin-right:4px}
+button,select,input,textarea{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:6px;padding:5px 10px}
+button{cursor:pointer}button:hover{border-color:var(--acc)}
+textarea{width:100%;min-height:60px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0}
+.chk{display:flex;gap:8px;padding:5px 0;border-bottom:1px dashed var(--line)}
+.chk.done label{text-decoration:line-through;color:var(--mut)}
+.phase{margin:14px 0 4px;font-weight:700}
+.mer{background:#fff;border-radius:8px;padding:8px;overflow-x:auto;border:1px solid var(--line)}
+.log{border:1px solid var(--line);border-left:4px solid var(--acc);border-radius:6px;padding:8px 10px;margin:8px 0;background:var(--bg)}
+.log.Finding{border-left-color:var(--ok)}.log.Action{border-left-color:var(--acc)}.log.Conclusion{border-left-color:var(--warn)}.log.Decision{border-left-color:#8e44ad}.log.Question{border-left-color:var(--bad)}
+.log small{color:var(--mut)}
+.note{color:var(--mut);font-size:12.5px}
+.warnbox{border:1px solid var(--warn);background:var(--bg);border-radius:8px;padding:8px 12px;margin:8px 0}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;max-width:1150px;margin:8px auto 0;padding:0 16px;align-items:center}
+.tabs .tab{font-weight:600;padding:7px 16px;border-radius:8px 8px 0 0}
+.tabs .tab.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+.tabs #theme{margin-left:auto}
+.pane[hidden]{display:none}
+td.m{text-align:center;font-weight:700;white-space:nowrap}
+.mY{background:rgba(31,143,78,.30)}.mP{background:rgba(217,130,43,.30)}.mN{background:rgba(192,57,43,.22)}
+td.m.weak{outline:2px dashed var(--warn);outline-offset:-3px}
+.leg span{display:inline-block;padding:1px 8px;border-radius:6px;margin-right:6px;font-size:12px}
+@media (max-width:600px){h1{font-size:20px}}
+</style>
+</head>
+<body>
+<header>
+  <h1>ISE 5204 Project Tracker: Robotized Inspection System (Option 1)</h1>
+  <div class="sub">Prof. Ran Jin · Virginia Tech · AM-made MFC anode lattices · Scope: Medium (layout + simulation) · Goal: most faults detected in least time</div>
+  <div class="sub">Main-content view. The complete record (every rule, source and finding) is in <a href="../MSE_Project_MASTER.md">MSE_Project_MASTER.md</a>.</div>
+</header>
+<div class="tabs">
+  <button class="tab on" id="tabbtn-hub" data-tab="hub">Project hub (rules, scope, tracking)</button>
+  <button class="tab" id="tabbtn-report" data-tab="report">Report content (results, matrix, gaps)</button>
+  <button id="theme" title="Toggle light/dark">Theme</button>
+</div>
+<nav id="nav-hub"><div class="in">
+  <a href="#overview">Overview</a><a href="#flow">Flowcharts</a><a href="#todo">Checklist</a><a href="#log">Tracker log</a><a href="#scan">Scan methods</a><a href="#sim">Simulation software</a><a href="#scope">Scope</a><a href="#sources">Sources</a><a href="#rules">Rules</a><a href="#open">Open questions</a>
+</div></nav>
+<nav id="nav-report" hidden><div class="in">
+  <a href="#r-results">Results register</a><a href="#r-concl">Provisional conclusions</a><a href="#r-matrix">Feature-by-method matrix</a><a href="#r-evid">Evidence lines</a><a href="#r-conf">Conflicts and corrections</a><a href="#r-gaps">Gaps checklist</a>
+</div></nav>
+<main>
+<div class="pane" id="pane-hub">
+
+<section id="overview"><h2>Overview and deadlines</h2><div class="body">
+  <div class="grid">
+    <div class="tile"><b>Overall checklist</b><span class="big" id="pct">0%</span><div class="bar"><i id="pbar"></i></div><span class="note" id="pcount"></span></div>
+    <div class="tile"><b>Next deadline</b><span id="nextdl" class="big"></span><div class="note" id="nextname"></div></div>
+    <div class="tile"><b>Final due</b><span class="big" id="finalcd"></span><div class="note">12/9/2026, 8:00 AM EST, Canvas</div></div>
+    <div class="tile"><b>Simulation software</b><span class="big" id="swchosen">Not chosen</span><div class="note">Pick in the Simulation section</div></div>
+    <div class="tile"><b>Data files</b><span class="big">Unopened</span><div class="note">RAR / Excel / STL: wait for your go-ahead</div></div>
+    <div class="tile"><b>Weight</b><span class="big">25%</span><div class="note">Problem 5 · Lit review 5 · Scope+method 10 · Results 5</div></div>
+  </div>
+  <h3>Milestones</h3>
+  <div class="tblwrap"><table id="mstbl"><thead><tr><th>Date</th><th>Milestone</th><th>Option 1 content</th><th>Countdown</th></tr></thead><tbody></tbody></table></div>
+</div></section>
+
+<section id="flow"><h2>Flowcharts</h2><div class="body">
+  <h3>Major steps</h3><div class="mer"><pre class="mermaid">
+flowchart LR
+  A["Problem formulation<br/>10/26 done"] --> B["Literature review<br/>11/9"]
+  B --> C["Initial data analysis<br/>11/16"]
+  C --> D["Draft report<br/>12/2"]
+  D --> E["Final report<br/>12/9 8AM EST"]
+  style A fill:#cfeedd,stroke:#1f8f4e
+</pre></div>
+  <h3>Detailed steps (Medium scope)</h3><div class="mer"><pre class="mermaid">
+flowchart TD
+  subgraph P1["Phase 1: Formulate and scope"]
+    a1["Choose Option 1 + Medium scope"] --> a2["Define error types, sensor, layout variables, metrics"]
+  end
+  subgraph P2["Phase 2: Literature review"]
+    b1["10+ journal papers"] --> b2["Methodology tree"]
+  end
+  subgraph P3["Phase 3: Build simulation"]
+    c1["Choose simulation software"] --> c2["Build cell layout: arm, sensor, turntable"]
+    c2 --> c3["Open STL data (when allowed)"]
+    c3 --> c4["Inject manufacturing errors into STLs"]
+    c4 --> c5["Virtual scan -> point clouds"]
+  end
+  subgraph P4["Phase 4: Analyze"]
+    d1["Data-quality metrics: coverage, density, noise, registration"] --> d2["Compare 2-3 layouts: faults found vs time"]
+    d2 --> d3["Conclusions"]
+  end
+  subgraph P5["Phase 5: Write up"]
+    e1["Slides max 15"] --> e2["IEEE report max 6 pages (you write it)"]
+    e2 --> e3["Code + submit on Canvas"]
+  end
+  P1 --> P2 --> P3 --> P4 --> P5
+</pre></div>
+</div></section>
+
+<section id="todo"><h2>Checklist</h2><div class="body">
+  <div class="row"><select id="fphase"><option value="">All phases</option></select><select id="fstate"><option value="">All</option><option value="open">Open only</option><option value="done">Done only</option></select><button id="expand">Reset all ticks</button></div>
+  <div id="checklist"></div>
+</div></section>
+
+<section id="log"><h2>Tracker log: findings, actions, conclusions, decisions</h2><div class="body">
+  <p class="note">Everything you find, do or conclude goes here. Saved in this browser (localStorage). Use Export to paste into the master md and keep it for the final report.</p>
+  <div class="row">
+    <select id="ltype"><option>Finding</option><option>Action</option><option>Conclusion</option><option>Decision</option><option>Question</option></select>
+    <input id="ldate" type="date">
+    <input id="ltag" placeholder="tag (e.g. layout, sensor)" style="flex:1;min-width:140px">
+  </div>
+  <textarea id="ltext" placeholder="Write the entry. Add the source or file name if any."></textarea>
+  <div class="row"><button id="ladd">Add entry</button><select id="lfilter"><option value="">All types</option><option>Finding</option><option>Action</option><option>Conclusion</option><option>Decision</option><option>Question</option></select><button id="lexport">Export as Markdown</button><button id="lcopy">Copy to clipboard</button></div>
+  <div id="loglist"></div>
+</div></section>
+
+<section id="scan"><h2>Scan / inspection methods</h2><div class="body">
+  <p class="note">[Medium] Abstract-level reading. Read full papers before citing.</p>
+  <div class="row"><input id="sfilter" placeholder="Filter methods..." style="flex:1"></div>
+  <div class="tblwrap"><table id="scantbl"><thead><tr><th>Method</th><th>Sees</th><th>Strengths</th><th>Limits</th></tr></thead><tbody></tbody></table></div>
+  <p><b>Layouts:</b> robot arm + scanner · turntable + fixed scanner · gantry / fixed multi-camera · conveyor stations · inline in the printer · hybrid (surface scan, then CT on doubtful areas).</p>
+  <p><b>View planning:</b> coverage path planning, CAD-based, sampling-based, next-best-view (Scott, Roth &amp; Rivest 2003). <b>Analysis:</b> compare scan to STL (deviation map), point-cloud deep learning.</p>
+  <p><b>Scan simulation:</b> ray-cast the mesh from virtual viewpoints with range, resolution, hidden surfaces and distance-dependent noise; Gaussian depth noise is the common simple model.</p>
+</div></section>
+
+<section id="sim"><h2>Simulation software</h2><div class="body">
+  <p>Pick the tool you will use. Your choice is saved and shown in the overview. <span class="note">[Medium] Confirm licence and version.</span></p>
+  <div class="row"><label>Robot / cell tool: <select id="swrobot"><option value="">Not chosen</option></select></label><label>Scan / data tool: <select id="swscan"><option value="">Not chosen</option></select></label></div>
+  <div class="tblwrap"><table id="swtbl"><thead><tr><th>Tool</th><th>Role</th><th>Cost</th><th>Notes</th></tr></thead><tbody></tbody></table></div>
+  <p class="note">Suggested stack (not a requirement): RoboDK or CoppeliaSim for layout/reachability; Open3D + trimesh for scanning, error injection and metrics; CloudCompare for checks. Blender 5.1.2 is installed via Steam.</p>
+</div></section>
+
+<section id="scope"><h2>Scope and Problem Formulation questions</h2><div class="body">
+  <div class="tblwrap"><table><thead><tr><th>Scope</th><th>What</th><th>Risk</th></tr></thead><tbody>
+  <tr><td>Small</td><td>One fixed layout, few STLs, coverage only</td><td>Too thin; low score</td></tr>
+  <tr style="background:var(--chip)"><td><b>Medium (chosen)</b></td><td>Build cell layout, simulate scanning, inject errors, compare 2-3 layouts on data-quality metrics</td><td>Learn a simulation tool fast; pick early</td></tr>
+  <tr><td>Ambitious</td><td>Medium + viewpoint/layout optimization, realistic noise, automatic defect detection</td><td>Heavy for 1-2 people in ~6 weeks</td></tr></tbody></table></div>
+  <h3>Questions to answer yourself</h3>
+  <ul><li><b>Manufacturing error:</b> which AM process and error types; how each is modeled and sized; how realism is justified.</li>
+  <li><b>Robot simulation:</b> which robot, sensor, tool; what is simulated (kinematics, reachability, collisions, cycle time).</li>
+  <li><b>Inspection data:</b> point-cloud format, density, noise; ground-truth virtual data or added noise.</li>
+  <li><b>Layout:</b> decision variables (robot position, turntable, sensor standoff, viewpoints) and objective (coverage, accuracy, time).</li>
+  <li><b>Data quality:</b> metrics and what counts as "good".</li>
+  <li><b>Success criteria:</b> results that go in 15 slides and 6 pages.</li></ul>
+  <h3>The product</h3>
+  <p>MFC anode: porous cube lattice (TPMS-like) made by additive manufacturing. Dataset: 1000 designs, 50/50 manufacturable; variables x1-x6, d1-d4, FEASIBILITY label, STL meshes. The PDF never states the AM process. Data unopened.</p>
+</div></section>
+
+<section id="sources"><h2>Sources and documents</h2><div class="body">
+  <p class="note">Blue = course files · Orange = external source. Green badge = copy on this PC; red = not downloaded (external, abstract-level reading). Links to local files open relative to the Dashboard folder.</p>
+  <div class="row"><select id="srcf"><option value="">All</option><option value="local">Course / local</option><option value="ext">External</option></select><span id="srcsum" class="note"></span></div>
+  <div class="tblwrap"><table id="srctbl"><thead><tr><th>Source</th><th>Use</th><th>Status</th></tr></thead><tbody></tbody></table></div>
+</div></section>
+
+<section id="rules"><h2>Rules</h2><div class="body"><ul id="rulelist"></ul></div></section>
+
+<section id="open"><h2>Open questions</h2><div class="body">
+  <div id="openlist"></div>
+</div></section>
+</div><!-- /pane-hub -->
+
+<div class="pane" id="pane-report" hidden>
+<p class="note" style="margin:12px 0 0">Everything here feeds the final report (problem, literature review, method, results). Claude adds to it whenever a step is completed. Items marked "verify" must be checked by you in the source before they go into the report. Full detail: MSE_Project_MASTER.md sections 17 and 18.</p>
+
+<section id="r-results"><h2>Results register (what is done and can go into the report)</h2><div class="body">
+  <div class="row"><select id="rsec"><option value="">All report sections</option></select><span id="rcount" class="note"></span></div>
+  <div class="tblwrap"><table id="rtbl"><thead><tr><th>Date</th><th>Report section</th><th>Result</th><th>Source</th><th>Confidence / status</th></tr></thead><tbody></tbody></table></div>
+</div></section>
+
+<section id="r-concl"><h2>Provisional conclusions (change as evidence comes in)</h2><div class="body">
+  <ul id="conclist"></ul>
+  <div class="warnbox">Not decided yet: which features actually drive FEASIBILITY, and the minimum strut and wall size in the STLs. Both need the data (RAR is still unopened). The final scan method follows from those two.</div>
+</div></section>
+
+<section id="r-matrix"><h2>Feature-by-method matrix</h2><div class="body">
+  <p class="note">Letter = capability rating from my first draft (physics and general knowledge, [Medium]). A black dot = at least one retrieved paper provides evidence for that pair. Dashed border = the paper evidence is weak or from a different kind of method (see Conflicts and corrections). A rating without a dot is NOT literature-backed; "no paper found" does not mean "cannot".</p>
+  <div class="leg"><span class="mY">Y can measure</span><span class="mP">P partial</span><span class="mN">N cannot</span><span style="outline:2px dashed var(--warn)">weak evidence</span></div>
+  <div class="tblwrap"><table id="mtx"></table></div>
+  <p class="note">Method key: M1 structured light, M2 laser line, M3 photogrammetry, M4 contact CMM, M5 X-ray CT, M6 ultrasonic/eddy/thermography (the evidence found is resonance and melt-pool thermal), M7 in-process layer imaging. Time per part [Medium]: CT 14-16 min on a 5 mm polymer lattice (Gallardo 2024); no measured time for a cm-scale part.</p>
+</div></section>
+
+<section id="r-evid"><h2>Evidence lines (13 papers, 14 lines; DOIs verified via Crossref)</h2><div class="body">
+  <p class="note">Numbers and quotes come from the literature tool and have not been re-read in the papers: verify before citing. FT = full text read by the tool, PT = partial.</p>
+  <div class="row"><input id="efilter" placeholder="Filter (method, feature, author)..." style="flex:1"></div>
+  <div class="tblwrap"><table id="evtbl"><thead><tr><th>Method</th><th>Features</th><th>Part</th><th>Resolution / accuracy / min size</th><th>Scan time</th><th>Paper</th><th>Read</th></tr></thead><tbody></tbody></table></div>
+</div></section>
+
+<section id="r-conf"><h2>Conflicts and corrections</h2><div class="body">
+  <ul id="conflist"></ul>
+</div></section>
+
+<section id="r-gaps"><h2>Gaps checklist: tick the ones you are going for</h2><div class="body">
+  <h3>Research gaps (what the project can contribute)</h3>
+  <p class="note">[Medium] "No paper found" means searches did not surface one; confirm on Google Scholar / IEEE Xplore. Suggested core set from the Master chat (not the professor's): gaps 1, 2, 5; 3 for the hidden-surface model; 6 for layout; 4 optional.</p>
+  <div id="gapchk"></div><div class="row"><span id="gapsum" class="note"></span></div>
+  <h3>Evidence gaps found in the literature search (what is missing for the method choice)</h3>
+  <div id="egapchk"></div><div class="row"><span id="egapsum" class="note"></span></div>
+</div></section>
+</div><!-- /pane-report -->
+
+</main>
+<script>
+function ls(k,d){try{var v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
+function ss(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+
+/* ---------- theme ---------- */
+document.getElementById('theme').onclick=function(){
+  var r=document.documentElement,cur=r.getAttribute('data-theme');
+  var dark=cur?cur==='dark':window.matchMedia('(prefers-color-scheme:dark)').matches;
+  var n=dark?'light':'dark';r.setAttribute('data-theme',n);ss('theme',n);
+};
+(function(){var t=ls('theme',null);if(t)document.documentElement.setAttribute('data-theme',t)})();
+
+/* ---------- milestones ---------- */
+var MS=[
+ {d:'2026-10-26',n:'Problem formulation and scope',c:'Manufacturing error? Robot simulation? Inspection data (3D point cloud)? Layout?'},
+ {d:'2026-11-09',n:'Literature review',c:'10+ journal papers; methodology tree'},
+ {d:'2026-11-16',n:'Initial data analysis',c:'Simulation data exploration; initial layout and design'},
+ {d:'2026-12-02',n:'Draft report',c:'Slides and report'},
+ {d:'2026-12-09T08:00:00-05:00',n:'Final report',c:'Slides (<=15), IEEE report (<=6 pp), code; video optional'}
+];
+function days(d){var t=new Date(d.length<=10?d+'T23:59:00-05:00':d);return Math.ceil((t-new Date())/864e5)}
+(function(){
+  var tb=document.querySelector('#mstbl tbody'),next=null;
+  MS.forEach(function(m){var n=days(m.d);if(n>=0&&!next)next=m;
+    tb.insertAdjacentHTML('beforeend','<tr><td>'+esc(m.d.slice(0,10))+'</td><td>'+esc(m.n)+'</td><td>'+esc(m.c)+'</td><td>'+(n<0?'<span class="badge b-ok">passed</span>':n+' days')+'</td></tr>')});
+  if(next){document.getElementById('nextdl').textContent=days(next.d)+' days';document.getElementById('nextname').textContent=next.n+' ('+next.d.slice(0,10)+')'}
+  document.getElementById('finalcd').textContent=Math.max(0,days(MS[4].d))+' days';
+})();
+
+/* ---------- checklist ---------- */
+var TODO=[
+ ['1. Formulate and scope',[
+  ['p1','Choose Option 1',true],['p2','Choose Medium scope',true],['p3','Write down manufacturing error types, sensor, layout variables, metrics (your own words)'],['p4','Confirm with professor: are the lattice STLs the parts to inspect? what does "simulate the dataset" mean? which AM process?']]],
+ ['2. Literature review (due 11/9)',[
+  ['l1','Read 10+ journal papers (full text, not abstracts)'],['l2','Cover: AM defects in lattices, robotic scan view planning, point-cloud quality, inspection time/cost, NDT methods'],['l3','Build the methodology tree'],['l4','Record each paper in the Sources table and the Tracker log'],['l5','Collect feature-by-method evidence and cross-check it (done 2026-10-31)',true],['l6','Choose which research gaps you are going for (Report content tab)'],['l7','Read the 13 evidence-file papers yourself (numbers and quotes unverified)']]],
+ ['3. Set up simulation',[
+  ['s1','Choose robot/cell simulation software'],['s2','Choose scan/data tool (Open3D, trimesh, ...)'],['s3','Build the cell layout: robot, sensor, turntable/fixture'],['s4','Get your go-ahead, then extract the RAR and look at the Excel and STL files'],['s5','Check the sample STL-processing code mentioned on slide 6']]],
+ ['4. Generate and analyze data (due 11/16 for first pass)',[
+  ['d1','Define and inject manufacturing errors into STLs (justify from literature)'],['d2','Run virtual scans from several viewpoints and make point clouds'],['d3','Compute data-quality metrics: coverage, density, noise, registration error, defect detection'],['d4','Compare 2-3 layouts: faults found vs time'],['d5','Manually verify the results'],['d6','Write conclusions in the Tracker log']]],
+ ['5. Write-up (draft 12/2, final 12/9)',[
+  ['w1','Slides (max 15) drafted'],['w2','IEEE report (max 6 pages) drafted by you'],['w3','Code cleaned and complete'],['w4','Submit on Canvas before 12/9 8:00 AM EST'],['w5','Optional: pre-recorded presentation']]]
+];
+var done=ls('mse_done',{});
+(function(){
+  var sel=document.getElementById('fphase');TODO.forEach(function(p,i){sel.insertAdjacentHTML('beforeend','<option value="'+i+'">'+esc(p[0])+'</option>')});
+  TODO.forEach(function(p){p[1].forEach(function(t){if(t[2]&&done[t[0]]===undefined)done[t[0]]=true})});
+  function draw(){
+    var fp=document.getElementById('fphase').value,fs=document.getElementById('fstate').value,h='',tot=0,dn=0;
+    TODO.forEach(function(p,i){
+      p[1].forEach(function(t){tot++;if(done[t[0]])dn++});
+      if(fp!==''&&String(i)!==fp)return;
+      var rows='';
+      p[1].forEach(function(t){var d=!!done[t[0]];if(fs==='open'&&d)return;if(fs==='done'&&!d)return;
+        rows+='<div class="chk'+(d?' done':'')+'"><input type="checkbox" id="c_'+t[0]+'" '+(d?'checked':'')+' data-id="'+t[0]+'"><label for="c_'+t[0]+'">'+esc(t[1])+'</label></div>'});
+      if(rows){var pd=p[1].filter(function(t){return done[t[0]]}).length;h+='<div class="phase">'+esc(p[0])+' <span class="chip">'+pd+'/'+p[1].length+'</span></div>'+rows}
+    });
+    document.getElementById('checklist').innerHTML=h||'<p class="note">Nothing matches.</p>';
+    var pc=tot?Math.round(dn/tot*100):0;
+    document.getElementById('pct').textContent=pc+'%';document.getElementById('pbar').style.width=pc+'%';document.getElementById('pcount').textContent=dn+' of '+tot+' done';
+    Array.prototype.forEach.call(document.querySelectorAll('#checklist input'),function(c){c.onchange=function(){done[c.dataset.id]=c.checked;ss('mse_done',done);draw()}});
+  }
+  document.getElementById('fphase').onchange=draw;document.getElementById('fstate').onchange=draw;
+  document.getElementById('expand').onclick=function(){if(confirm('Reset all ticks?')){done={};TODO.forEach(function(p){p[1].forEach(function(t){if(t[2])done[t[0]]=true})});ss('mse_done',done);draw()}};
+  draw();
+})();
+
+/* ---------- tracker log ---------- */
+var LOG=ls('mse_log',null)||[
+ {id:1,type:'Decision',date:'2026-10-26',tag:'scope',text:'Chose Option 1 (robotized inspection system); professor said it has more freedom.'},
+ {id:2,type:'Decision',date:'2026-10-31',tag:'scope',text:'Chose Medium scope: layout + simulation + error injection + compare layouts on data-quality metrics.'},
+ {id:3,type:'Decision',date:'2026-10-31',tag:'goal',text:'Goal: detect the most faults in the least time (system speed).'},
+ {id:4,type:'Finding',date:'2026-10-19',tag:'product',text:'Product is an MFC anode lattice; the project PDF does not state the AM process.'},
+ {id:5,type:'Finding',date:'2026-10-31',tag:'gaps',text:'Research gaps 1-7 found (faults-vs-time Pareto, risk-guided viewpoints, hidden-surface quantification, view-dependent detection, etc.). Needs confirmation on Google Scholar / IEEE Xplore.'},
+ {id:6,type:'Action',date:'2026-10-31',tag:'files',text:'Created MSE_Project_MASTER.md and this dashboard. Data files (RAR/Excel/STL) not opened yet.'}
+];
+(function(){
+  document.getElementById('ldate').value=new Date().toISOString().slice(0,10);
+  function draw(){
+    var f=document.getElementById('lfilter').value,h='';
+    LOG.slice().sort(function(a,b){return a.date<b.date?1:-1}).forEach(function(e){if(f&&e.type!==f)return;
+      h+='<div class="log '+e.type+'"><span class="chip">'+e.type+'</span><small>'+esc(e.date)+(e.tag?' · '+esc(e.tag):'')+'</small> <button data-del="'+e.id+'" style="float:right;padding:0 8px">x</button><div>'+esc(e.text).replace(/\n/g,'<br>')+'</div></div>'});
+    document.getElementById('loglist').innerHTML=h||'<p class="note">No entries.</p>';
+    Array.prototype.forEach.call(document.querySelectorAll('[data-del]'),function(b){b.onclick=function(){if(confirm('Delete this entry?')){LOG=LOG.filter(function(e){return String(e.id)!==b.dataset.del});ss('mse_log',LOG);draw()}}});
+  }
+  document.getElementById('ladd').onclick=function(){var t=document.getElementById('ltext').value.trim();if(!t)return;
+    LOG.push({id:Date.now(),type:document.getElementById('ltype').value,date:document.getElementById('ldate').value,tag:document.getElementById('ltag').value.trim(),text:t});
+    ss('mse_log',LOG);document.getElementById('ltext').value='';draw()};
+  document.getElementById('lfilter').onchange=draw;
+  function md(){var s='## Tracker log export ('+new Date().toISOString().slice(0,10)+')\n\n';
+    LOG.slice().sort(function(a,b){return a.date<b.date?-1:1}).forEach(function(e){s+='- ['+e.type+'] '+e.date+(e.tag?' ('+e.tag+')':'')+': '+e.text.replace(/\n/g,' ')+'\n'});return s}
+  document.getElementById('lexport').onclick=function(){var b=new Blob([md()],{type:'text/markdown'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='tracker_log_export.md';a.click()};
+  document.getElementById('lcopy').onclick=function(){try{navigator.clipboard.writeText(md());alert('Copied.')}catch(e){alert('Copy failed; use Export.')}};
+  draw();
+})();
+
+/* ---------- scan methods ---------- */
+var SCAN=[
+ ['Structured-light scanner','outer surface','high detail, small/medium parts, minutes','shiny/transparent surfaces; hidden surfaces'],
+ ['Laser line scanner','outer surface','handles dark and semi-reflective surfaces better; handheld or robot-mounted','hidden surfaces'],
+ ['Contact probe (CMM)','chosen points','very accurate reference','slow; cannot reach inside a lattice'],
+ ['Photogrammetry','outer surface','cheap','least accurate in a vendor guide and one academic comparison'],
+ ['X-ray CT','inside and outside','only option that sees hidden pores and struts','hours per scan, costly, uncertainty methods still developing'],
+ ['Ultrasonic / eddy current / thermography','hidden or near-surface flaws','find defects without a full scan','mostly studied on solid metal parts, not lattices'],
+ ['In-process monitoring (cameras in printer)','each layer while printing','catches problems early','inside the printer, not a separate cell; optical coarse, thermal finer']
+];
+(function(){
+  var tb=document.querySelector('#scantbl tbody');
+  function draw(){var q=document.getElementById('sfilter').value.toLowerCase();tb.innerHTML='';
+    SCAN.forEach(function(r){if(q&&r.join(' ').toLowerCase().indexOf(q)<0)return;tb.insertAdjacentHTML('beforeend','<tr>'+r.map(function(c){return'<td>'+esc(c)+'</td>'}).join('')+'</tr>')})}
+  document.getElementById('sfilter').oninput=draw;draw();
+})();
+
+/* ---------- simulation software ---------- */
+var SW=[
+ ['RoboDK','robot','Free trial, paid licence','Easiest for layout, reachability, collisions, cycle time; Python API'],
+ ['CoppeliaSim (Edu)','robot','Free for education','Robot + vision/depth sensors; Python scripting'],
+ ['ROS 2 + Gazebo','robot','Free','Most flexible; steepest setup on Windows'],
+ ['Webots','robot','Free','Simple; fewer industrial arms'],
+ ['NVIDIA Isaac Sim','robot','Free, needs NVIDIA GPU','Realistic sensors; heavy install'],
+ ['PyBullet','robot','Free','Light physics and ray casting in Python'],
+ ['Open3D','scan','Free','Ray casting, point clouds, ICP registration'],
+ ['trimesh','scan','Free','Mesh loading, ray intersection, fault injection'],
+ ['BlenderProc / Blender','scan','Free','Depth-sensor simulation and renders; Blender 5.1.2 installed via Steam'],
+ ['CloudCompare / MeshLab','scan','Free','Viewing and deviation maps']
+];
+(function(){
+  var sr=document.getElementById('swrobot'),ssn=document.getElementById('swscan'),tb=document.querySelector('#swtbl tbody');
+  SW.forEach(function(r){(r[1]==='robot'?sr:ssn).insertAdjacentHTML('beforeend','<option>'+esc(r[0])+'</option>');
+    tb.insertAdjacentHTML('beforeend','<tr><td>'+esc(r[0])+'</td><td>'+(r[1]==='robot'?'Robot / cell':'Scan / data')+'</td><td>'+esc(r[2])+'</td><td>'+esc(r[3])+'</td></tr>')});
+  var c=ls('mse_sw',{robot:'',scan:''});sr.value=c.robot;ssn.value=c.scan;
+  function upd(){c={robot:sr.value,scan:ssn.value};ss('mse_sw',c);
+    document.getElementById('swchosen').textContent=(c.robot||c.scan)?[c.robot,c.scan].filter(Boolean).join(' + '):'Not chosen'}
+  sr.onchange=upd;ssn.onchange=upd;upd();
+})();
+
+/* ---------- tabs ---------- */
+(function(){
+  Array.prototype.forEach.call(document.querySelectorAll('.tab'),function(b){b.onclick=function(){
+    var t=b.dataset.tab;
+    ['hub','report'].forEach(function(k){document.getElementById('pane-'+k).hidden=(k!==t);document.getElementById('nav-'+k).hidden=(k!==t);document.getElementById('tabbtn-'+k).className='tab'+(k===t?' on':'')});
+    window.scrollTo(0,0)}});
+})();
+
+/* ---------- report tab: results register ---------- */
+var RESULTS=[
+ ['2026-10-26','Problem formulation','Chose Option 1 (design the robotized inspection system); professor said it has much more freedom.','Decision log','Decided'],
+ ['2026-10-31','Problem formulation','Scope = Medium (cell layout, scan simulation, error injection, compare layouts). Goal = most faults detected in least time.','Decision log','Decided'],
+ ['2026-10-31','Methodology','Method-selection logic: (1) list measurable features that drive FEASIBILITY, (2) mark which scan methods can measure each, (3) eliminate methods that fail a must-measure feature, (4) design the layout for the surviving method, (5) simulate. Hybrid (fast surface scan, CT on flagged parts) kept as a candidate so that elimination does not leave only slow CT.','Chat 2026-10-31; MASTER sec. 17','Plan; user decision'],
+ ['2026-10-31','Literature review','Literature evidence collected for 7 inspection methods x 12 features: 13 distinct journal papers, 14 evidence lines. All 13 DOIs resolve in Crossref to the stated title, journal and year.','Feature by method.md; Crossref check','DOIs [Verified]; numbers [Medium], verify in papers'],
+ ['2026-10-31','Literature review','X-ray CT is the only method with retrieved evidence on interior features (strut thickness, pore size and connectivity, porosity). Evidence is on strut lattices (polymer, Ti, steel, AlSi10Mg), not TPMS.','Gallardo 2024; Holgado 2025; du Plessis 2018','[Medium]'],
+ ['2026-10-31','Literature review','CT accuracy on thin struts is disputed: good repeatability at 1 mm struts (Gallardo), up to 50% error on 190-250 um struts (Lopez-Garcia), 40.6% difference from stereology at 200-300 um (Snodderly).','See Conflicts section','[Medium]; strut-size explanation is untested'],
+ ['2026-10-31','Literature review','Contact probes reach only exterior surfaces of lattices; interior needs CT.','du Plessis 2021','[Medium]; closed access, partial read'],
+ ['2026-10-31','Literature review','Resonance methods detect that struts are missing but cannot count or locate them (global pass/fail).','McGuigan 2021; Obaton 2021','[Medium]'],
+ ['2026-10-31','Literature review','No retrieved paper tests a post-process structured-light, laser-line or photogrammetry scan on a lattice. Their capability is physics-based, not literature-backed.','Evidence file gaps','[Medium]; may be a search limit'],
+ ['2026-10-31','Literature review','No retrieved paper uses a TPMS or sheet lattice for inspection metrology; all specimens are strut-based.','Evidence file limitation 4','[Medium]']
+];
+(function(){
+  var sel=document.getElementById('rsec'),secs=[];
+  RESULTS.forEach(function(r){if(secs.indexOf(r[1])<0){secs.push(r[1]);sel.insertAdjacentHTML('beforeend','<option>'+esc(r[1])+'</option>')}});
+  function draw(){var f=sel.value,tb=document.querySelector('#rtbl tbody'),n=0;tb.innerHTML='';
+    RESULTS.slice().sort(function(a,b){return a[0]<b[0]?1:-1}).forEach(function(r){if(f&&r[1]!==f)return;n++;
+      tb.insertAdjacentHTML('beforeend','<tr>'+r.map(function(c){return'<td>'+esc(c)+'</td>'}).join('')+'</tr>')});
+    document.getElementById('rcount').textContent=n+' entries'}
+  sel.onchange=draw;draw();
+})();
+
+/* ---------- provisional conclusions ---------- */
+var CONCL=[
+ 'Interior features (inner strut thickness, interior pores, blocked pores, interior missing struts, porosity) can only be measured by X-ray CT in the retrieved literature. [Medium]',
+ 'Exterior features (outer shape, warping, outer missing struts) are reachable by structured light and laser line from physics, but no lattice paper confirms it. [Medium]',
+ 'Provisional eliminations: contact CMM (exterior only, slow), photogrammetry (lowest accuracy, no lattice evidence), resonance/ultrasonic/thermography (global result, cannot locate or count). [Medium]',
+ 'In-process imaging sits inside the printer, so it does not fit a separate robotic inspection cell unless the professor says otherwise. [Medium]',
+ 'Candidate set going into the layout stage: structured-light or laser-line surface scan, X-ray CT, and a hybrid (surface scan on every part, CT on flagged parts). [Medium]',
+ 'If the data shows interior features drive infeasibility, CT is required and speed must come from the hybrid; if exterior features drive it, a robot-mounted surface scanner can win. [Medium]'
+];
+document.getElementById('conclist').innerHTML=CONCL.map(function(c){return'<li>'+esc(c)+'</li>'}).join('');
+
+/* ---------- feature-by-method matrix ---------- */
+var MN=['M1 Structured light','M2 Laser line','M3 Photogrammetry','M4 Contact CMM','M5 X-ray CT','M6 US / EC / thermo','M7 In-process'];
+var FN=['F1 Outer shape / dimensions','F2 Warping / shrinkage','F3 Strut/wall thickness, outer','F4 Strut/wall thickness, interior','F5 Pore opening, outer faces','F6 Interior pore size / connectivity','F7 Blocked pores / trapped powder','F8 Missing struts, outer','F9 Missing struts, interior','F10 Porosity / volume fraction','F11 Roughness / stair-stepping','F12 Hidden surfaces (occlusion)'];
+var RATE=['YYPYYNP','YYPYYNP','PPNPYNP','NNNNYPP','PPPNYNP','NNNNYNP','NNNNYPN','YYPPYNY','NNNNYPP','NNNNYPN','PPNPPNN','PPPNYNN'];
+var EVID={0:[1,12],1:[1,9],2:[1,12],3:[1,3,12],4:[1,3,4,5,6,7,10,12],5:[8,9],6:[1,2,3,11]};
+var WEAK={'1_1':'only paper is in-process laser line on a polymer printer','1_9':'in-process, layer by layer, not a post-process scan','3_12':'limitation statement (exterior only), not capability','4_7':'paper detects through-holes in a hollow lattice, not trapped powder','4_12':'FVM occlusion errors, not CT capability','5_8':'global resonance test, no location','5_9':'global resonance / in-process thermal; count not recoverable'};
+(function(){
+  var h='<thead><tr><th>Feature</th>'+MN.map(function(m){return'<th>'+esc(m)+'</th>'}).join('')+'</tr></thead><tbody>';
+  FN.forEach(function(f,i){h+='<tr><td>'+esc(f)+'</td>';
+    for(var m=0;m<7;m++){var r=RATE[i].charAt(m),ev=EVID[m].indexOf(i+1)>=0,wk=WEAK[m+'_'+(i+1)];
+      h+='<td class="m m'+r+(wk?' weak':'')+'" title="'+esc(wk||(ev?'paper evidence exists':'no paper found'))+'">'+r+(ev?' &#9679;':'')+'</td>'}
+    h+='</tr>'});
+  document.getElementById('mtx').innerHTML=h+'</tbody>';
+})();
+
+/* ---------- evidence lines ---------- */
+var EVL=[
+ ['M1','F1, F12','SOLID','not reported (bias vs CMM only)','not reported','Catalucci 2020, Measurement','10.1016/j.measurement.2020.108081','PT'],
+ ['M2','F1, F9','LATTICE (polymer, in-process)','not reported','not reported','Moretti 2024, Addit. Manuf.','10.1016/j.addma.2024.104424','PT'],
+ ['M3','F1, F12','SOLID','not reported; 99% triangle coverage','not reported','Catalucci 2020, Measurement','10.1016/j.measurement.2020.108081','PT'],
+ ['M4','F1, F3, F12','LATTICE','not reported','not reported','du Plessis 2021, Mater. Des. Process. Commun.','10.1002/mdp2.216','PT'],
+ ['M5','F1, F3, F5, F7','LATTICE (AlSi10Mg, hollow struts)','44 um voxel; uncertainty +-5.1 to +-7.5 um; min through-hole ~0.18 mm (4x4 voxels)','not reported','Holgado 2025, J. Nondestruct. Eval.','10.1007/s10921-025-01269-8','FT'],
+ ['M5','F3, F4, F12','LATTICE (PA12 SLS, 1 mm struts)','34.26 um voxel; FVM reference 0.13 um vertical / 8.5 um lateral','14-16 min CT; 70-75 min per FVM probe','Gallardo 2024, Polymers','10.3390/polym16101419','FT'],
+ ['M5','F3, F10','LATTICE (316L L-PBF, 250/500 um struts)','26.8 um resolution; up to 50% strut error (check: file lists 0.5 um voxel and 190 um struts)','not reported','Lopez-Garcia 2022, Prog. Addit. Manuf.','10.1007/s40964-022-00263-0','PT'],
+ ['M5','F3','LATTICE (Ti-6Al-4V, 300 um struts)','10 um voxel; CT vs stereology difference up to 138.4 um (40.6%)','not reported','Snodderly 2022, 3D Print. Med.','10.1186/s41205-022-00141-z','FT'],
+ ['M5','F3, F6, F7, F10','LATTICE (review)','10 um voxel; min detectable pore ~3 voxels (~30 um)','not reported','du Plessis 2018, 3D Print. Addit. Manuf.','10.1089/3dp.2018.0060','PT'],
+ ['M6','F9','LATTICE','not reported; missing strut count cannot be inferred','not reported','McGuigan 2021, Addit. Manuf.','10.1016/j.addma.2020.101808','PT'],
+ ['M6','F8, F9','LATTICE (Co-Cr)','7.8 Hz frequency resolution; 80.95% classification accuracy; 1 vs 2 outer struts not separable','not reported','Obaton 2021, Weld. World','10.1007/s40194-020-01034-7','PT'],
+ ['M6','F8, F9','LATTICE (316L, 50 um struts), in-process thermal','63 um/pixel; >94% confidence missing strut','in-process','Forien 2023, Addit. Manuf. Lett.','10.1016/j.addlet.2022.100112','FT'],
+ ['M7','F1, F2','LATTICE (maraging steel, 1.5 mm struts)','100 um/pixel; 0.3 mm deviation detected at >90% probability','in-line, per layer','Colosimo 2024, Addit. Manuf.','10.1016/j.addma.2024.104538','FT'],
+ ['M7','F1, F3, F11','LATTICE (L-PBF, 2 mm struts)','24.2 um/pixel; ~0.05 mm average deviation','in-process','Guerra 2023, Opt. Laser Technol.','10.1016/j.optlastec.2023.109252','PT']
+];
+(function(){
+  var tb=document.querySelector('#evtbl tbody');
+  function draw(){var q=document.getElementById('efilter').value.toLowerCase();tb.innerHTML='';
+    EVL.forEach(function(r){if(q&&r.join(' ').toLowerCase().indexOf(q)<0)return;
+      tb.insertAdjacentHTML('beforeend','<tr><td>'+esc(r[0])+'</td><td>'+esc(r[1])+'</td><td>'+esc(r[2])+'</td><td>'+esc(r[3])+'</td><td>'+esc(r[4])+'</td><td><a href="https://doi.org/'+esc(r[6])+'" target="_blank" rel="noopener">'+esc(r[5])+'</a></td><td>'+esc(r[7])+'</td></tr>')})}
+  document.getElementById('efilter').oninput=draw;draw();
+})();
+
+/* ---------- conflicts and corrections ---------- */
+var CONF=[
+ 'M5 on F3 (CT strut thickness): Gallardo 2024 finds CT more repeatable than a higher-resolution reference; Lopez-Garcia 2022 finds up to 50% error on fine struts; Snodderly 2022 finds up to 40.6% difference from stereology. The idea that this depends on strut size in voxels is untested, and Snodderly had ~30 voxels per strut and still disagreed. 40.6% is a gap between two methods, not proven CT error.',
+ 'M6 on F9 (missing strut count): McGuigan 2021 and Obaton 2021 both show that the count cannot be reliably recovered by resonance; treat that as the defensible statement.',
+ 'M5 on F5-F7 (minimum detectable feature): 3 voxels (du Plessis 2018) versus 4x4 voxels in-plane (Holgado 2025); the stricter 4x4 rule is the safer planning rule for thin through-holes.',
+ 'Correction to the evidence file: it says 12 distinct papers and 13 lines; the correct count is 13 distinct papers and 14 lines.',
+ 'Correction: the Lopez-Garcia line lists 26.8 um resolution with a 0.5 um voxel and 190 um struts while the body says 250 um design struts. Re-read that paper before citing.',
+ 'Classification: the M2 paper and Forien (listed as M6) are in-process sensors; M6 resonance papers are global tests. So M1-M3 post-process scanning of lattices has no retrieved paper at all.',
+ 'Applicability: the specimens are strut-based and of mixed material; the project part appears TPMS-like and its material and AM process are unknown, so transfer is an extrapolation.'
+];
+document.getElementById('conflist').innerHTML=CONF.map(function(c){return'<li>'+esc(c)+'</li>'}).join('');
+
+/* ---------- gaps checklists ---------- */
+var GAPS=[
+ ['g1','Detection and time as two competing goals: planners treat defect detection as a coverage constraint and minimise time; no Pareto formulation of faults found vs time found.','core'],
+ ['g2','Scan where faults are likely, not everywhere: no work links a fault-risk model to viewpoint choice for AM parts (Fuentes 2020 ultrasonic paper is nearest).','core'],
+ ['g3','How much of a lattice an outside scanner can see: no lattice-specific ray-casting method to quantify hidden volume through struts.','hidden-surface model'],
+ ['g4','Fast screen then CT on flagged parts: no study quantifies the screen detection rate against CT ground truth, or time and cost of the two-stage pipeline.','optional second comparison'],
+ ['g5','View-dependent detection ability (incidence angle, distance, occlusion): simulation-based probability of detection exists but is not tied to viewpoint planning.','core'],
+ ['g6','Throughput design of an inspection cell for small printed parts: layout advice is generic; arm, turntable and parallel-station choices are not modeled for small lattice parts.','layout'],
+ ['g7','Validated virtual scanners for porous lattices: noise models are simple.','supporting']
+];
+var EGAPS=[
+ ['e1','No post-process structured-light, laser-line or photogrammetry scan of a lattice with strut or pore measurements (M1-M3 on F3-F7).','decides whether a surface scanner can be justified'],
+ ['e2','No TPMS / sheet-lattice inspection metrology; all retrieved lattices are strut-based.','your part geometry'],
+ ['e3','No direct comparison of a surface scanner against CT on the same lattice.','the actual method decision'],
+ ['e4','Eddy-current branch of M6 not populated; thermography only in-process.','low priority'],
+ ['e5','CT accuracy on struts below about 300 um is disputed; strut size of the dataset unknown.','needs the STL data']
+];
+(function(){
+  function build(id,sumId,arr,key,label){
+    var st=ls(key,{}),box=document.getElementById(id);
+    function draw(){var h='',n=0;arr.forEach(function(g){var d=!!st[g[0]];if(d)n++;
+      h+='<div class="chk'+(d?' done':'')+'"><input type="checkbox" id="c_'+g[0]+'" data-id="'+g[0]+'" '+(d?'checked':'')+'><label for="c_'+g[0]+'">'+esc(g[1])+' <span class="chip">'+esc(g[2])+'</span></label></div>'});
+      box.innerHTML=h;document.getElementById(sumId).textContent=n+' of '+arr.length+' '+label;
+      Array.prototype.forEach.call(box.querySelectorAll('input'),function(c){c.onchange=function(){st[c.dataset.id]=c.checked;ss(key,st);draw()}})}
+    draw();
+  }
+  build('gapchk','gapsum',GAPS,'mse_gaps','research gaps selected');
+  build('egapchk','egapsum',EGAPS,'mse_egaps','evidence gaps selected to address');
+})();
+
+/* ---------- sources ---------- */
+var SRC=[
+ ['2026 ISE5204 Project Description.pdf','../2026 ISE5204 Project Description.pdf','Project rules, rubric, milestones, dataset description','local',1],
+ ['Design_1000data-1.rar (348 MB; 1000 designs, STL + Excel)','../Design_1000data-1.rar','Dataset. NOT opened yet. Needs 7-Zip/WinRAR.','local',1],
+ ['MSE_Project_Handoff.md','../MSE_Project_Handoff.md','Master chat handoff: sensing options, research gaps','local',1],
+ ['MSE_Project_MASTER.md','../MSE_Project_MASTER.md','Complete record of everything in this project','local',1],
+ ['Feature by method.md (literature evidence file)','../Claude/Feature by method.md','Evidence for 7 methods x 12 features; cross-checked in MASTER sec. 18','local',1],
+ ['Kang, Deng, Jin 2021, ASME JCISE 21(6) 061008','https://doi.org/10.1115/1.4050984','Instructor reference (web search did not find it directly)','ext',0],
+ ['You et al. 2020, complete MFC by additive layer manufacturing','https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7412530/','Printed MFC background','ext',0],
+ ['3D printed porous copper electrodes for MFC (Frontiers 2018)','https://www.frontiersin.org/journals/energy-research/articles/10.3389/fenrg.2018.00050/pdf','Printed MFC electrodes','ext',0],
+ ['3D printed porous carbon anode for MFC (DLP)','https://www.eng.uwo.ca/nanoenergy/publications/2018/PDF/3D-Printed-Porous-Carbon-Anode-for-Enhanced-Power-Generation-in-Microbial-Fuel-Cell,.pdf','Printed MFC anodes','ext',0],
+ ['2023 review of metal AM non-destructive testing','https://informahealthcare.com/doi/full/10.1080/17452759.2023.2266658','NDT overview','ext',0],
+ ['Lu and Wong 2017, post-process NDT comparison','https://doaj.org/article/c29251941efc4a96961b615cbc39bfa5','NDT comparison','ext',0],
+ ['Padua: CT accuracy for printed metal lattices','https://core.ac.uk/works/133793130','CT on lattices','ext',0],
+ ['NIST on CT uncertainty','https://www.nist.gov/node/1683781','CT uncertainty','ext',0],
+ ['Chen et al., in-situ monitoring critical review','https://arxiv.org/pdf/2404.13673v1.pdf','In-process monitoring','ext',0],
+ ['Grasso et al., geometric accuracy monitoring','https://www.euspen.eu/knowledge-base/ICE18362.pdf','In-process monitoring','ext',0],
+ ['CAD-based view planning with consistent registration','https://scholar.korea.ac.kr/handle/2021.sw.korea/136941','View planning','ext',0],
+ ['Mondragon sampling-based planner','https://ebiltegia.mondragon.edu/handle/20.500.11984/6324?show=full','View planning','ext',0],
+ ['Next-best-view boundary exploration','https://arxiv.org/pdf/2412.10444','View planning','ext',0],
+ ['Deep learning in AM review','https://arxiv.org/pdf/2403.00669','Point-cloud / defect analysis','ext',0],
+ ['2024 Sensors: laser-line sensor simulation on STL models','https://doaj.org/article/c6db431c03444e9fba889b04274d1a03','Scan simulation','ext',0],
+ ['Low-cost scanners vs photogrammetry study','https://seer.ufrgs.br/index.php/rita/article/view/150932','Scanner comparison (abstract level)','ext',0],
+ ['Formlabs scanner guide','https://formlabs.com/blog/how-to-choose-a-scanner-accuracy-volume-budget/','Scanner comparison (vendor page)','ext',0],
+ ['PSO-based planning for a robotic line scanner','https://arxiv.org/pdf/2307.04431','Scan-time planning','ext',0],
+ ['RL for profilometric sensor trajectories','https://arxiv.org/html/2409.03429v1','Scan-time planning','ext',0],
+ ['Joint routing and sensor configuration','https://arxiv.org/pdf/2606.20739','Scan-time planning','ext',0],
+ ['Targeted viewpoint sampling','https://www.sciencedirect.com/science/article/abs/pii/S0736584518305246','Scan-time planning','ext',0],
+ ['Fuentes et al. 2020, Bayesian optimisation for ultrasonic inspection','https://eprints.whiterose.ac.uk/id/eprint/160984/3/1-s2.0-S0888327020302831-main.pdf','Fewest measurements to decide defective','ext',0],
+ ['Liu et al., multi-robot scan planning','https://arxiv.org/pdf/2106.08164','Multi-robot planning','ext',0],
+ ['Multi-UAV control','https://arxiv.org/pdf/2409.13302','Multi-robot planning','ext',0],
+ ['Verna et al., inspection strategy and cost model for AM','https://link.springer.com/article/10.1007/s11740-021-01067-x','Inspection cost','ext',0],
+ ['Design for Inspectability (Penn State)','https://pure.psu.edu/en/publications/design-for-inspectability-a-framework-to-increase-inspectability-/','Inspectability','ext',0],
+ ['NASA inspectability metric','https://bvbvf1.bib-bvb.de/vufind/PrimoRecord/cdi_nasa_ntrs_20240007593','Inspectability','ext',0],
+ ['On-line inspection of lattices via in-situ imaging','https://re.public.polimi.it/handle/11311/1277729','Lattice inspection','ext',0]
+];
+(function(){
+  var tb=document.querySelector('#srctbl tbody');
+  function draw(){var f=document.getElementById('srcf').value,n=0,loc=0;tb.innerHTML='';
+    SRC.forEach(function(r){if(f&&r[3]!==f)return;n++;if(r[4])loc++;
+      tb.insertAdjacentHTML('beforeend','<tr><td><a class="'+(r[3]==='ext'?'ext':'')+'" href="'+esc(r[1])+'" target="_blank" rel="noopener">'+esc(r[0])+'</a></td><td>'+esc(r[2])+'</td><td>'+(r[4]?'<span class="badge b-ok">Downloaded</span>':'<span class="badge b-bad">Not downloaded</span> <span class="note">link only, abstract-level; read full text before citing</span>')+'</td></tr>')});
+    document.getElementById('srcsum').textContent=n+' sources, '+loc+' on this PC'}
+  document.getElementById('srcf').onchange=draw;draw();
+})();
+
+/* ---------- rules & open questions ---------- */
+var RULES=[
+ 'Worth 25%; 1-2 students, same score for both. Grading: problem formulation 5%, literature review 5%, scope and methodology 10%, results and summary 5%.',
+ 'Submit PowerPoint slides (max 15), IEEE conference-template report (max 6 pages), and completed code. Pre-recorded presentation optional.',
+ 'Due 8:00 AM EST on 12/9/2026 on Canvas. Late: 0-24h max 75% (18.75), 24-48h max 50% (12.5), after 48h 0.',
+ 'Instructor owns all code and data copyright; get written permission from Dr. Jin (jran5@vt.edu) before any reuse.',
+ 'Reports scoring 22 or more may be recommended for conference submission. A small scope leads to a low score.',
+ 'Do not open the RAR, Excel or STL files until you say so.',
+ 'Claude gives outlines, options and explanations only; tags confidence on factual claims; flags gaps instead of guessing.'
+];
+document.getElementById('rulelist').innerHTML=RULES.map(function(r){return'<li>'+esc(r)+'</li>'}).join('');
+var OPEN=[
+ 'Are the lattice STLs the parts to inspect, or only examples?',
+ 'What exactly does "simulate the dataset" mean? (my reading: virtual scans of the STLs)',
+ 'Which AM process was used? The PDF never says.',
+ 'How deep must the robot simulation be; any required or forbidden software?',
+ 'Is the sample STL-processing code from slide 6 provided? (not checked; data unopened)',
+ 'Final choice of simulation software.',
+ 'What are the minimum strut and wall sizes in the STLs? (decides whether CT thin-strut error applies)',
+ 'Is the lattice TPMS/sheet-like or strut-based, and what are the x1 categories B, D, P, G, I?',
+ 'Which features actually drive FEASIBILITY? (needs the data; decides the scan method)'
+];
+(function(){
+  var st=ls('mse_open',{});
+  var h='';OPEN.forEach(function(q,i){h+='<div class="chk'+(st[i]?' done':'')+'"><input type="checkbox" id="q'+i+'" data-i="'+i+'" '+(st[i]?'checked':'')+'><label for="q'+i+'">'+esc(q)+'</label></div>'});
+  document.getElementById('openlist').innerHTML=h;
+  Array.prototype.forEach.call(document.querySelectorAll('#openlist input'),function(c){c.onchange=function(){st[c.dataset.i]=c.checked;ss('mse_open',st);c.parentNode.className='chk'+(c.checked?' done':'')}});
+})();
+
+/* ---------- mermaid ---------- */
+try{mermaid.initialize({startOnLoad:true,theme:'default',flowchart:{useMaxWidth:true}})}catch(e){}
+</script>
+</body>
+</html>

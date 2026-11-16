@@ -321,6 +321,15 @@ flowchart TD
   </tbody></table></div>
   <p class="note">The literature on the electrical and biological side of the anode (conductivity, surface chemistry, coating, biocompatibility) is in the anode section above. None of those can be seen in the dataset, because the STL files only describe geometry. The dataset's feasibility label is purely about whether the geometry can be printed.</p>
 
+  <h3>Can any defect be ignored? (what happens if one check is skipped)</h3>
+  <div class="tblwrap"><table><thead><tr><th>Check skipped</th><th>Infeasible designs wrongly accepted (of 500)</th><th>What the rule protects (Kang 2021)</th><th>Verdict [Medium]</th></tr></thead><tbody>
+    <tr><td>d4 cavities connected</td><td>135 (27%)</td><td>Mass transport through the anode for the bio-electrochemical reaction</td><td>Keep: largest unique effect</td></tr>
+    <tr><td>d3 cavity size over 2 mm</td><td>79 (16%)</td><td>Avoids clogging in long operation (cavity limit taken from a bamboo-charcoal anode study)</td><td>Keep; a functional limit that depends on the operating condition, so the 2 mm value could be revisited with the professor</td></tr>
+    <tr><td>d1 feature size over 2 mm</td><td>61 (12%)</td><td>Manufacturability on an FFF printer</td><td>Keep</td></tr>
+    <tr><td>d2 solid connected</td><td>2 (0.4%)</td><td>Structural integrity of the anode</td><td>Almost redundant as a separate check: 32 of the 34 designs with d2 = 0 also fail another rule</td></tr>
+  </tbody></table></div>
+  <p class="note">Counts from Analysis/feature_correlation.py logic on the 500 infeasible designs. A rule counts as redundant only if the other rules already catch nearly everything it would catch. Limits: the label records design rules, not measured performance (no power or clogging data), so the data cannot show that any violation is harmless. It also treats every violation as equal; a design that misses the 2 mm limit by 0.1 mm is treated the same as one that misses by 1 mm. Near misses are common: 28 designs fail d1 by under 0.25 mm and 86 fail d3 by under 0.25 mm, so a scanner needs tolerance well below that to classify borderline parts.</p>
+
   <h3>Meaning for the inspection system [Medium]</h3>
   <ul>
     <li><b>Important distinction (Kang 2021):</b> the dataset label is computed by design rules on the voxel model of the design. It does not record printing errors. In a real inspection, the faults are printing errors that would break the same rules: a strut thinner than about 2 mm, a cavity closed or narrowed below about 2 mm, a broken connection in the solid, or cavities cut off from each other.</li>

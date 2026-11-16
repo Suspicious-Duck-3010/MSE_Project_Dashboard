@@ -229,7 +229,7 @@ flowchart TD
     <tr><td>Polymer, extrusion</td><td>FDM printing of PLA filament; final anode a 30 mm cylinder with a Schwarz P minimal-surface unit cell, 0.25 mm resolution</td><td>Coated with a graphite-carbon ink (graphite powder, polyurethane glue, petroleum spirit); a double coat was chosen because more coats started blocking the holes; nickel spray tested as an alternative</td><td>You 2020 (partial read)</td></tr>
     <tr><td>Metal, powder bed</td><td>Selective laser melting of AlSi10Mg on an EOS machine; Schwartz Diamond lattice, 4 mm unit cell, 20% volume fraction, struts about 0.85 mm (theoretical), 30 um layers</td><td>Shot peening with 100-200 um zirconia beads to remove loose powder and improve finish; diamond lattice is self-supporting, so no supports are needed</td><td>Calignano 2015 (partial read; some details in the tool summary conflict, only text read in full is used)</td></tr>
     <tr><td>Resin, light curing</td><td>UV-curable resin printed as a porous structure</td><td>Carbonised to make it conductive; or copper-modified</td><td>Bian 2018a/b, as reported by Chung and Dhar 2021</td></tr>
-    <tr><td>This project's dataset</td><td>The process is not named in the pages I read. The paper says the minimum feature size is set by the nozzle diameter and printer motors, 2 mm in their case study, which suggests an extrusion-type printer [Medium: inference]</td><td>Not on the pages read</td><td>Chilukuri 2024 (read)</td></tr>
+    <tr><td>This project's dataset</td><td>Fused filament fabrication (FFF), assumed in Kang 2021; layer thickness 0.1 to 0.3 mm; 2 mm minimum feature size from FFF printer guidelines. The PDF itself never states the process.</td><td>Not stated; coating or conductive finishing is not part of the design rules</td><td>Kang 2021 (read); Chilukuri 2024 (read)</td></tr>
   </tbody></table></div>
   <p class="note">General steps: design the lattice, export a mesh (STL), slice, print layer by layer, clean off supports or loose powder, make the part conductive and biocompatible (coat, carbonise or plate), assemble with the cathode, inoculate with bacteria.</p>
 
@@ -248,15 +248,16 @@ flowchart TD
   <ul>
     <li><b>Chilukuri, Song, Kang, Jin (2024)</b>, ASME MSEC2024-125075, "Generating optimized 3D designs for manufacturing using a guided voxel diffusion model". It builds new MFC anode designs that are easier to manufacture. [read pages 1-10]</li>
     <li>Their data: <b>2,735 anode designs</b> (cell counts 1 and 2), stored as STL and labelled with minimum feature size from simulations. Voxel grid 64 x 64 x 64 with 0.2 mm voxels (that would be a 12.8 mm cube, [Medium: not confirmed that the part was rescaled]).</li>
-    <li>Their design source is reference [12] in that paper: <b>Kang, Deng and Jin (2021), JCISE 21(6):061008</b>. That is the same paper the project PDF cites. I confirmed the DOI in Crossref but have not read it.</li>
+    <li>Their design source is reference [12] in that paper: <b>Kang, Deng and Jin (2021), JCISE 21(6):061008</b>, the same paper the project PDF cites. I have now read it (see the dataset section for what it defines).</li>
     <li>A surrogate model (ResNet-50 based) predicts MFS with r-squared 0.96; guided generation raised the mean normalised MFS from 0.54 to 0.63 versus unguided. [read]</li>
     <li>Authors' limits: small dataset; only MFS considered; minimum cavity size, connectivity, resistance and surface area left for future work. [read]</li>
   </ul>
-  <div class="warnbox"><b>Discrepancies and hypotheses to check:</b>
+  <div class="warnbox"><b>Resolved with Kang 2021 (read 2026-11-16):</b>
     <ul>
-      <li>The project PDF says 1000 designs with a 50/50 split. Chilukuri uses 2,735 designs with a continuous MFS label. Our set may be a subset, with FEASIBILITY derived from MFS (for example MFS against a 2 mm limit). That is a hypothesis [Low]; check against the Excel when the data is opened.</li>
-      <li>If feature sizes are millimetres (1.5-16 mm) rather than the 0.2-0.3 mm struts in much of the CT literature, the CT thin-strut accuracy dispute matters much less. Confirm on our STLs.</li>
-      <li>The x1 codes B, D, P, G, I could be lattice types (D = Diamond, P = Primitive, G = Gyroid, I = IWP are TPMS names). B is unknown. [Low: guess from letters; ask the professor.]</li>
+      <li><b>Dataset size:</b> Kang 2021 defines a grid of 27,720 designs; your 1000 designs are a sample of it, with FEASIBILITY computed by four design rules (see the dataset section). Chilukuri 2024 used 2,735 of them (cell counts 1 and 2) and labelled them with minimum feature size.</li>
+      <li><b>x1 codes:</b> B = BCC, D = Schwarz Diamond, G = Gyroid, I = I-WP, O = OCTO, P = Schwarz Primitive [letters from initials]. So four types are minimal-surface (TPMS) lattices and two (BCC, OCTO) are strut lattices.</li>
+      <li><b>Process:</b> fused filament fabrication (FFF), assumed by the authors; the project PDF does not say. Confirm with the professor.</li>
+      <li><b>Feature sizes:</b> the feasibility limit is 2 mm for both solid features and cavities, so the sub-0.3 mm struts of the CT literature are not the relevant scale.</li>
     </ul></div>
 
   <h3>6. Expert and author views</h3>
@@ -279,19 +280,19 @@ flowchart TD
   <h3>8. Sources and reading status</h3>
   <div class="tblwrap"><table><thead><tr><th>Paper</th><th>Link</th><th>Read status</th></tr></thead><tbody>
     <tr><td>Chilukuri, Song, Kang, Jin 2024, ASME MSEC2024-125075</td><td><a href="https://par.nsf.gov/servlets/purl/10510447" target="_blank" rel="noopener">NSF PAR PDF</a></td><td>Pages 1-10 read directly by Claude</td></tr>
-    <tr><td>Kang, Deng, Jin 2021, JCISE 21(6) 061008 (source of the anode designs)</td><td><a href="https://doi.org/10.1115/1.4050984" target="_blank" rel="noopener">10.1115/1.4050984</a></td><td>DOI verified; not read yet</td></tr>
+    <tr><td>Kang, Deng, Jin 2021, JCISE 21(6) 061008 (source of the anode designs)</td><td><a href="https://doi.org/10.1115/1.4050984" target="_blank" rel="noopener">10.1115/1.4050984</a></td><td>Pages 1-10 read directly by Claude (author-hosted copy, saved in the Sources folder)</td></tr>
     <tr><td>Santoro et al. 2017, J. Power Sources 356:225-244</td><td><a href="https://doi.org/10.1016/j.jpowsour.2017.03.109" target="_blank" rel="noopener">10.1016/j.jpowsour.2017.03.109</a></td><td>Most of the text read through a fetch tool; reference list not read</td></tr>
     <tr><td>Chung and Dhar 2021, Front. Energy Res. 9:679061</td><td><a href="https://doi.org/10.3389/fenrg.2021.679061" target="_blank" rel="noopener">10.3389/fenrg.2021.679061</a></td><td>About 40k of 110k characters read verbatim; rest summarised by tool</td></tr>
     <tr><td>You et al. 2020, Molecules 25(13):3051</td><td><a href="https://doi.org/10.3390/molecules25133051" target="_blank" rel="noopener">10.3390/molecules25133051</a></td><td>About 40k of 67k characters read verbatim</td></tr>
     <tr><td>Calignano et al. 2015, Sci. Rep. 5:17373</td><td><a href="https://doi.org/10.1038/srep17373" target="_blank" rel="noopener">10.1038/srep17373</a></td><td>About 40k of 84k characters read verbatim; tool summary conflicted with the text in places, so only verbatim values are used</td></tr>
   </tbody></table></div>
-  <p class="note">Not found: Sun et al. 2021 and Zeng et al. 2024 (cited on slide 5 of the PDF). Searches did not identify them; ask the professor or look in the Kang 2021 reference list.</p>
+  <p class="note">Not found: Sun et al. 2021 and Zeng et al. 2024 (cited on slide 5 of the PDF). They are not in the Kang 2021 reference list either; ask the professor.</p>
 </div></section>
 
 <section id="r-data"><h2>The dataset: what each column means, and what drives feasibility</h2><div class="body">
-  <p class="note">Analysis run 2026-11-16 on the 1000 designs (Designdata.xlsx plus all 1000 STL files) with offline scripts in the Analysis folder: <code>stl_basic_features.py</code> (geometry from every STL) and <code>feature_correlation.py</code> (correlation, mutual information, rules). The PDF does not say what the columns mean, so the meanings below are inferred from the data. Treat them as hypotheses until confirmed with the professor or Kang et al. 2021. Verify the numbers yourself before they go into the report.</p>
+  <p class="note">Analysis run 2026-11-16 on the 1000 designs (Designdata.xlsx plus all 1000 STL files) with offline scripts in the Analysis folder: <code>stl_basic_features.py</code> (geometry from every STL) and <code>feature_correlation.py</code> (correlation, mutual information, rules). The PDF does not say what the columns mean. The meanings below were first inferred from the data and are now confirmed from Kang, Deng and Jin 2021 (the paper your PDF cites; I read pages 1 to 10). Only the d1 to d4 column order (d1 = e1 and so on) is my inference from the data. Verify the numbers yourself before they go into the report.</p>
 
-  <div class="warnbox"><b>Main finding [High for the rule, Medium for the meanings]:</b> in this dataset FEASIBILITY = 1 exactly when <b>d1 &gt; 2.0, d3 &gt; 2.0, d2 = 1 and d4 = 1</b>. This rule classifies all 1000 designs correctly (500 of 500 feasible, 500 of 500 infeasible). The smallest feasible values are d1 = 2.05 and d3 = 2.02. That matches the 2 mm printer limit (nozzle and motors) reported for this design family in Chilukuri et al. 2024. Dropping d2 changes only 2 designs (99.8% accurate), so d2 adds almost nothing beyond d4. The design variables x1 to x5 alone predict feasibility with 92.4% cross-validated accuracy (a depth-8 tree), because they control d1 to d4.</div>
+  <div class="warnbox"><b>Main finding [High, confirmed by Kang et al. 2021, Tables 1 and 2]:</b> in this dataset FEASIBILITY = 1 exactly when <b>d1 &gt; 2.0, d3 &gt; 2.0, d2 = 1 and d4 = 1</b>. This rule classifies all 1000 designs correctly (500 of 500 feasible, 500 of 500 infeasible). The smallest feasible values are d1 = 2.05 and d3 = 2.02. This is the rule set in Kang 2021 (Table 2): minimum feature size over 2 mm, connected structure, minimum cavity size over 2 mm, connected cavities, with the 2 mm limit taken from fused-filament-fabrication (FFF) printer guidelines. Kang 2021 assumes an FFF printer and a 20 mm wide anode. Dropping d2 changes only 2 designs (99.8% accurate), so d2 adds almost nothing beyond d4. The design variables x1 to x5 alone predict feasibility with 92.4% cross-validated accuracy (a depth-8 tree), because they control d1 to d4.</div>
 
   <h3>Column meanings (inferred)</h3>
   <div class="tblwrap"><table id="coltbl"><thead><tr><th>Column</th><th>Likely meaning</th><th>Evidence in the data</th><th>Confidence</th></tr></thead><tbody></tbody></table></div>
@@ -314,19 +315,20 @@ flowchart TD
     <tr><td>2</td><td><b>Cavity (pore) size</b> at least 2 mm (d3)</td><td>269 infeasible designs fail it; 79 fail only this. Feasibility rises with d3 (rho 0.58).</td><td>Chilukuri 2024: minimum cavity size is an important attribute, left for future work. Pores must let liquid in and be cleared of powder or resin. [read]</td></tr>
     <tr><td>3</td><td><b>Solid feature size</b> at least 2 mm (d1)</td><td>185 infeasible designs fail it; 61 fail only this.</td><td>Chilukuri 2024 uses minimum feature size (2 mm limit) as the manufacturability metric. [read]</td></tr>
     <tr><td>4</td><td><b>Cell count</b> (x2)</td><td>Feasible share: 80% (1 cell), 70% (2), 34% (3), 13% (4), 0% (5). More cells make features and cavities smaller.</td><td>Calignano 2015 chose a 4 mm cell as a compromise between area, manufacturability and open voids. [partial read]</td></tr>
-    <tr><td>5</td><td><b>Lattice type</b> (x1)</td><td>Type O: 0 of 107 feasible. B 68%, P 63%, G 55%, I 42%, D 38%. Cramer V 0.40.</td><td>Not covered in the sources read.</td></tr>
-    <tr><td>6</td><td><b>Level-set offset</b> (x3)</td><td>Non-monotonic: 20% feasible at x3 below -1, about 60-65% near 0, 24% above 1. Linear correlation misses it.</td><td>Not covered in the sources read.</td></tr>
-    <tr><td>-</td><td>Not important: x4, x5, x6</td><td>x4 (mesh resolution) and x5 (rotation) are not significant (p above 0.17). x6 is constant.</td><td>-</td></tr>
+    <tr><td>5</td><td><b>Lattice type</b> (x1)</td><td>Type O (OCTO): 0 of 107 feasible. B (BCC) 68%, P 63%, G 55%, I 42%, D 38%. Cramer V 0.40.</td><td>Kang 2021 ANOVA: for the Primitive type, unit cell size and volume fraction explain most of the feasibility; for the Gyroid type, volume fraction and X rotation matter for conformance. [read]</td></tr>
+    <tr><td>6</td><td><b>Level-set offset</b> (x3)</td><td>Non-monotonic: 20% feasible at x3 below -1, about 60-65% near 0, 24% above 1. Linear correlation misses it.</td><td>Kang 2021 ANOVA lists the volume fraction factor as a top contributor, which fits the non-linear pattern seen here. [read]</td></tr>
+    <tr><td>-</td><td>Not important: x4, x5, x6</td><td>x4 (layer thickness) and x5 (X rotation) are not significant (p above 0.17). x6 is constant.</td><td>-</td></tr>
   </tbody></table></div>
   <p class="note">The literature on the electrical and biological side of the anode (conductivity, surface chemistry, coating, biocompatibility) is in the anode section above. None of those can be seen in the dataset, because the STL files only describe geometry. The dataset's feasibility label is purely about whether the geometry can be printed.</p>
 
   <h3>Meaning for the inspection system [Medium]</h3>
   <ul>
+    <li><b>Important distinction (Kang 2021):</b> the dataset label is computed by design rules on the voxel model of the design. It does not record printing errors. In a real inspection, the faults are printing errors that would break the same rules: a strut thinner than about 2 mm, a cavity closed or narrowed below about 2 mm, a broken connection in the solid, or cavities cut off from each other.</li>
     <li>The faults to find are the four conditions: a solid feature thinner than about 2 mm, a cavity smaller than about 2 mm, a disconnected solid, and a disconnected or trapped void.</li>
     <li>All four are geometric. A scanner must measure thickness and pore size to better than a fraction of 2 mm, and must see whether pores connect through the interior. Connectivity of interior pores is the part surface scanners cannot see directly.</li>
     <li>The feasible designs are barely above the limit (smallest d1 2.05, d3 2.02), so measurement accuracy near 2 mm matters: a scan error of a few tenths of a millimetre would misclassify borderline designs.</li>
   </ul>
-  <p class="note">Verification done (40 designs, voxelised at 0.2 mm): d1 follows the solid size and d3 the cavity size, but the exact values and the 2 mm cut-off were not reproduced, so the definitions stay hypotheses until Kang 2021 or the professor confirms them. Other geometry that could be read directly from the STL files (size, volume, area, number of pieces, mesh edge length) was measured.</p>
+  <p class="note">Definitions now confirmed from Kang 2021. Other geometry that could be read directly from the STL files (size, volume, area, number of pieces, mesh edge length) was measured.</p>
 </div></section>
 
 <section id="r-results"><h2>Results register (what is done and can go into the report)</h2><div class="body">
@@ -379,7 +381,7 @@ flowchart TD
 
 <section id="s-batch"><h2>Virtual batch: where the defects come from (keep all options)</h2><div class="body">
   <div class="tblwrap"><table><thead><tr><th>Option</th><th>What it is</th><th>Pros</th><th>Cons</th></tr></thead><tbody>
-    <tr><td><b>A. Use the dataset labels</b></td><td>1000 real designs; infeasible = defective. The data now shows what makes a design infeasible: solid feature below 2 mm, cavity below 2 mm, disconnected solid, disconnected or trapped void (see Report tab, dataset section).</td><td>Real geometry; ground truth is known exactly; no invented defect model.</td><td>Defects are design-level, not random print flaws; 50% defect rate is unrealistically high; defect location is not marked.</td></tr>
+    <tr><td><b>A. Use the dataset labels</b></td><td>1000 real designs; infeasible = defective. The data and Kang 2021 show what makes a design infeasible: minimum feature size below 2 mm, minimum cavity size below 2 mm, disconnected solid, disconnected cavities (see Report tab, dataset section). These are design-rule violations, not print defects.</td><td>Real geometry; ground truth is known exactly; no invented defect model.</td><td>Defects are design-level, not random print flaws; 50% defect rate is unrealistically high; defect location is not marked.</td></tr>
     <tr><td><b>B. Inject defects into the STLs</b></td><td>Take good designs and add faults at chosen rates and sizes: thin or broken struts, blocked pores, warping, surface roughness.</td><td>Full control of type, size, location and prevalence; realistic low defect rates.</td><td>Needs literature to justify defect types and sizes; more work.</td></tr>
     <tr><td><b>C. Combine A and B</b></td><td>Use the label-based defects plus injected process faults on feasible parts.</td><td>Covers both design and process faults.</td><td>Largest scope; risk of overreaching (see Scope).</td></tr>
   </tbody></table></div>
@@ -569,28 +571,28 @@ var CORR={"columns":["x2","x3","abs_x3","x4","x5_rot90","d1","d2","d3","d4","sol
 /* ---------- dataset analysis (generated numbers from Analysis/correlation_results.json) ---------- */
 var COLS=[
  ['Sample_ID, STL_file_Name','Design id and its mesh file','The STL is in feasible_designs or infeasible_designs; the folder matches FEASIBILITY for all 1000 designs.','High'],
- ['x1','Lattice type (6 codes)','Codes B 240, P 227, G 178, D 130, I 118, O 107 designs. The PDF showed 5 letters; O also exists and has 0 of 107 feasible. D, P, G, I could be the minimal-surface types Diamond, Primitive, Gyroid, IWP; B and O unknown.','Low (letter meanings)'],
- ['x2','Number of unit cells per axis (1 to 5)','Triangle count rises with x2 (rho 0.77). The cube is about 20.1 mm wide, so the unit cell would be about 20/x2 mm. Feasible share falls from 80% (1) to 0% (5).','Medium'],
- ['x3','Level-set offset (-1.5 to 1.5, step 0.1) that sets how much solid there is','Solid fraction of the mesh rises with x3 (rho 0.89). Feasibility is highest near 0 and low at both ends.','Medium'],
- ['x4','Mesh or sampling resolution (0.1, 0.2, 0.3)','Mean triangle edge length follows x4 (rho 0.88). No effect on feasibility (54%, 48%, 49%).','Medium'],
- ['x5','Rotation angle: 0 or 1.5708 (= 90 degrees)','Two values only; no effect on feasibility (52% versus 48%).','Medium'],
- ['x6','Unused (always 0)','One unique value across 1000 designs.','High'],
- ['d1','Size of the solid features (strut or wall thickness-like), mm','Values are sqrt(integer)/10, i.e. distances on a 0.1 mm grid; grows with solid fraction; every feasible design has d1 above 2.05. Check on 40 designs (voxelised STLs): d1 follows the largest ball that fits in the solid (rho 0.80) more than in the void (0.52), but the values are not equal (d1 averages 1.7 times larger).','Medium (direction checked, exact definition not reproduced)'],
- ['d3','Size of the cavities (pore size), mm','Same sqrt(integer)/10 pattern; falls with more cells (rho -0.72) and surface area; every feasible design has d3 above 2.02. Check on 40 designs: d3 follows the largest ball that fits in the void (rho 0.83) more than in the solid (0.69); values not equal (d3 averages 1.4 times larger).','Medium (direction checked, exact definition not reproduced)'],
- ['d2','Binary check (0 in 34 designs)','All 34 zeros are infeasible; they are always multi-piece. Probably solid connectivity.','Low'],
- ['d4','Binary check (0 in 265 designs)','All 265 zeros are infeasible; 135 designs fail only this. Probably connectivity of the pores (a trapped or disconnected void).','Low'],
- ['FEASIBILITY','1 = can be printed, 0 = cannot (500 each)','Equals the rule d1 > 2, d3 > 2, d2 = 1, d4 = 1 for all 1000 designs.','High']
+ ['x1','Unit cell type: P Schwarz Primitive, G Gyroid, I I-WP, D Schwarz Diamond, O OCTO, B BCC','Kang 2021 Table 1 lists exactly these six types. Counts here: B 240, P 227, G 178, D 130, I 118, O 107. O (OCTO) has 0 of 107 feasible. The letter mapping uses the initials.','High (types), Medium (letter mapping)'],
+ ['x2','Unit cells across the 20 mm width (1 to 5): cell size 20, 10, 6.66, 5 or 4 mm','Kang 2021: one to five unit cells fit in the 20 mm width. In our data the triangle count rises with x2 (rho 0.77) and feasibility falls from 80% to 0%.','High'],
+ ['x3','Volume fraction control factor (-1.5 to 1.5), sets how much solid there is','Kang 2021 Table 1. Solid fraction of our meshes rises with x3 (rho 0.89). Feasibility is highest near 0.','High'],
+ ['x4','Layer thickness: 0.1, 0.2 or 0.3 mm (a process parameter)','Kang 2021 Table 1. No effect on feasibility here (54%, 48%, 49%). My earlier guess "mesh resolution" was wrong; its link to mesh edge length (rho 0.88) probably comes from the voxel height being the layer thickness.','High'],
+ ['x5','X-axis rotation (build orientation); in our data only 0 or 90 degrees (1.5708 rad)','Kang 2021 Table 1 (grid 0 to 90 degrees). No effect on feasibility here (52% versus 48%).','High'],
+ ['x6','Y-axis rotation; always 0 in our data','Kang 2021 Table 1; one unique value across 1000 designs.','High'],
+ ['d1','e1: minimum feature size (mm); rule: more than 2 mm','Kang 2021 Table 2 and section 4.2: counts consecutive solid voxels along the horizontal plane; the 2 mm limit comes from printer guidelines. In our data every feasible design has d1 above 2.05. The d1 to d4 order matching e1 to e4 is my inference from the data.','High (rule), Medium (column order)'],
+ ['d2','e2: connectivity of the anode structure (all solid voxels connected), 0 or 1','Kang 2021 Table 2. All 34 zeros in our data are infeasible and multi-piece.','High (rule), Medium (column order)'],
+ ['d3','e3: minimum cavity size (mm); rule: more than 2 mm','Kang 2021: computed from the Euclidean distance transform of the voxel model; cavities under about 2 mm clog in long operation. Every feasible design has d3 above 2.02.','High (rule), Medium (column order)'],
+ ['d4','e4: connectivity of the anode cavities (all empty voxels connected), 0 or 1','Kang 2021 Table 2. All 265 zeros in our data are infeasible; 135 designs fail only this.','High (rule), Medium (column order)'],
+ ['FEASIBILITY','1 = all four rules satisfied, 0 = at least one violated (500 each)','Kang 2021: feasible only when all values are in range. Equals the rule d1 > 2, d3 > 2, d2 = 1, d4 = 1 for all 1000 designs. e1 and e2 are manufacturability rules; e3 and e4 are conformance to MFC needs.','High']
 ];
 (function(){
   var tb=document.querySelector('#coltbl tbody');
   COLS.forEach(function(r){tb.insertAdjacentHTML('beforeend','<tr>'+r.map(function(c,i){return'<td>'+(i===0?'<b>'+esc(c)+'</b>':esc(c))+'</td>'}).join('')+'</tr>')});
   var R=CORR.facts.infeasible_reasons,t2=document.querySelector('#reasontbl tbody');
-  [['d1 at most 2 mm (solid features too small)',R.d1_le_2,R.only_d1],['d3 at most 2 mm (cavities too small)',R.d3_le_2,R.only_d3],['d4 = 0 (connectivity)',R.d4_zero,R.only_d4],['d2 = 0 (connectivity)',R.d2_zero,'-'],['Two or more of the above',R.multiple,'-']].forEach(function(r){
+  [['d1 at most 2 mm (minimum feature size too small)',R.d1_le_2,R.only_d1],['d3 at most 2 mm (cavity too small, risk of clogging)',R.d3_le_2,R.only_d3],['d4 = 0 (cavities not connected)',R.d4_zero,R.only_d4],['d2 = 0 (solid structure not connected)',R.d2_zero,'-'],['Two or more of the above',R.multiple,'-']].forEach(function(r){
     t2.insertAdjacentHTML('beforeend','<tr><td>'+esc(r[0])+'</td><td>'+r[1]+'</td><td>'+r[2]+'</td></tr>')});
 })();
 
 /* correlation matrix */
-var PRETTY={x2:'x2 cells',x3:'x3 offset',abs_x3:'|x3|',x4:'x4 mesh',x5_rot90:'x5 rot90',d1:'d1 solid size',d2:'d2 flag',d3:'d3 cavity size',d4:'d4 flag',solid_frac:'solid fraction',area_per_vol:'area/volume',ntri:'triangles',mean_edge:'mesh edge',conn_pieces:'pieces',single_piece:'one piece',FEASIBILITY:'FEASIBILITY'};
+var PRETTY={x2:'x2 cells',x3:'x3 offset',abs_x3:'|x3|',x4:'x4 layer',x5_rot90:'x5 rot90',d1:'d1 solid size',d2:'d2 flag',d3:'d3 cavity size',d4:'d4 flag',solid_frac:'solid fraction',area_per_vol:'area/volume',ntri:'triangles',mean_edge:'mesh edge',conn_pieces:'pieces',single_piece:'one piece',FEASIBILITY:'FEASIBILITY'};
 (function(){
   var C=CORR.columns,sig={};
   CORR.assoc.forEach(function(a){sig[a.feature]=a.p_bonf<0.05});
@@ -654,6 +656,7 @@ var RESULTS=[
  ['2026-11-16','Results','Opened the dataset (1000 designs, all STL files valid). In this dataset FEASIBILITY = 1 exactly when d1 > 2.0, d3 > 2.0, d2 = 1 and d4 = 1 (500 of 500 feasible and 500 of 500 infeasible classified correctly). Smallest feasible d1 2.05, d3 2.02; matches the 2 mm printer limit in Chilukuri 2024.','Analysis/feature_correlation.py','[High] rule; meanings of d1-d4 are [Medium/Low]'],
  ['2026-11-16','Results','Inferred column meanings: x1 lattice type (6 codes incl. O), x2 cells per axis (1-5), x3 level-set offset, x4 mesh resolution, x5 rotation 0 or 90 degrees, x6 unused, d1 solid-feature size, d3 cavity size, d2 and d4 binary connectivity checks.','Analysis/stl_basic_features.py; feature_correlation.py','[Medium]; confirm with professor / Kang 2021'],
  ['2026-11-16','Results','Strongest associations with FEASIBILITY: d4 (0.60), x2 (-0.58), d3 (0.58), single-piece mesh (0.53), lattice type x1 (Cramer V 0.40). Not significant: x4, x5, x3 (linear); x3 matters non-linearly (feasible about 60-65% near 0, 20-24% at both extremes).','Analysis/correlation_results.json','[High] statistics; Spearman, Bonferroni-corrected'],
+ ['2026-11-16','Results','Read Kang, Deng and Jin 2021 (the paper cited in the project PDF). It defines the dataset: x1 unit cell type (Primitive, Gyroid, I-WP, Diamond, OCTO, BCC), x2 unit cells across 20 mm (1-5), x3 volume fraction factor, x4 layer thickness, x5 and x6 X and Y rotation; d1-d4 are the four feasibility features: minimum feature size, structure connectivity, minimum cavity size, cavity connectivity (limits: over 2 mm, true, over 2 mm, true). FFF printing is assumed. Feasibility is a design-rule result on the voxel model, not a record of printing errors.','Kang 2021 Tables 1-2, sections 3-4','[High]; column order d1=e1.. inferred from the data'],
  ['2026-11-16','Results','Independent check of d1 and d3 on 40 designs (20 feasible, 20 infeasible), voxelised at 0.2 mm from the STLs: d1 tracks the solid size (rho 0.80) and d3 the cavity size (rho 0.83), supporting the pairing; but the absolute values and the 2 mm threshold were not reproduced by my crude measurement (the opening-based size estimate failed; the largest-inscribed-ball estimate is 1.4 to 1.7 times smaller). So d1 and d3 are related to solid and cavity size but their exact definition is unknown. Kang 2021 or the professor should confirm.','Analysis/verify_feature_sizes.py; verify_feature_sizes.csv','[Medium]; small sample, non-watertight meshes, voxel pitch 0.2 mm'],
  ['2026-11-16','Methodology','Interpretation of the project: simulate a batch of parts with and without defects, run it through the inspection system, measure time and defects caught (user reading of slide 4; not confirmed by the professor). Planned in the Simulation plan tab.','User, chat 2026-11-16','Working interpretation'],
  ['2026-11-16','Methodology','If feasibility in our dataset is tied to MFS in millimetres, the CT thin-strut accuracy dispute (sub-0.3 mm struts) matters much less, and surface scanners become more plausible for outer features. Check on the STLs and Excel.','Chilukuri 2024 vs evidence file','[Medium]; needs data']
@@ -769,6 +772,7 @@ var SRC=[
  ['Design_1000data-1.rar (348 MB; 1000 designs, STL + Excel)','../Design_1000data-1.rar','Dataset. NOT opened yet. Needs 7-Zip/WinRAR.','local',1],
  ['MSE_Project_Handoff.md','../MSE_Project_Handoff.md','Master chat handoff: sensing options, research gaps','local',1],
  ['MSE_Project_MASTER.md','../MSE_Project_MASTER.md','Complete record of everything in this project','local',1],
+ ['Sources/Kang_JCISE_2021.pdf','../Sources/Kang_JCISE_2021.pdf','Kang, Deng, Jin 2021: defines the dataset columns and feasibility rules (author-hosted copy)','local',1],
  ['Analysis/stl_basic_features.py','../Analysis/stl_basic_features.py','Reads every STL: size, volume, area, pieces, mesh edge','local',1],
  ['Analysis/feature_correlation.py','../Analysis/feature_correlation.py','Correlation matrix, mutual information, feasibility rule','local',1],
  ['Analysis/correlation_results.json','../Analysis/correlation_results.json','All numbers shown in the dataset section','local',1],
@@ -830,12 +834,12 @@ document.getElementById('rulelist').innerHTML=RULES.map(function(r){return'<li>'
 var OPEN=[
  'Are the lattice STLs the parts to inspect, or only examples?',
  'What exactly does "simulate the dataset" mean? (my reading: virtual scans of the STLs)',
- 'Which AM process was used? The PDF never says; Chilukuri 2024 mentions a 2 mm nozzle (extrusion-type?), confirm with the professor.',
+ 'Which AM process was used? Kang 2021 assumes fused filament fabrication (FFF); the PDF never says. Confirm with the professor.',
  'How deep must the robot simulation be; any required or forbidden software?',
  'Is the sample STL-processing code from slide 6 provided? (not checked; data unopened)',
  'Final choice of simulation software.',
- 'What are the minimum strut and wall sizes in the STLs? (Chilukuri 2024: MFS 1.51-15.97 mm for their 2,735 designs; check our 1000)',
- 'Is the lattice TPMS/sheet-like or strut-based, and what are the x1 categories B, D, P, G, I? (D, P, G, I could be Diamond, Primitive, Gyroid, IWP; B unknown)',
+ 'Strut and wall sizes: the feasibility rule is more than 2 mm for solid features and cavities (Kang 2021). Measure the real minimum sizes in the 1000 STLs if needed.',
+ 'Answered by Kang 2021: x1 = unit cell type (B BCC, D Diamond, G Gyroid, I I-WP, O OCTO, P Primitive; letters from initials). Confirm the mapping with the professor.',
  'Which features actually drive FEASIBILITY? (needs the data; decides the scan method)'
 ];
 (function(){

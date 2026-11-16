@@ -74,13 +74,17 @@ td.m.weak{outline:2px dashed var(--warn);outline-offset:-3px}
 <div class="tabs">
   <button class="tab on" id="tabbtn-hub" data-tab="hub">Project hub (rules, scope, tracking)</button>
   <button class="tab" id="tabbtn-report" data-tab="report">Report content (results, matrix, gaps)</button>
+  <button class="tab" id="tabbtn-sim" data-tab="sim">Simulation plan</button>
   <button id="theme" title="Toggle light/dark">Theme</button>
 </div>
 <nav id="nav-hub"><div class="in">
   <a href="#overview">Overview</a><a href="#flow">Flowcharts</a><a href="#todo">Checklist</a><a href="#log">Tracker log</a><a href="#scan">Scan methods</a><a href="#sim">Simulation software</a><a href="#scope">Scope</a><a href="#sources">Sources</a><a href="#rules">Rules</a><a href="#open">Open questions</a>
 </div></nav>
 <nav id="nav-report" hidden><div class="in">
-  <a href="#r-anode">The anode</a><a href="#r-results">Results register</a><a href="#r-concl">Provisional conclusions</a><a href="#r-matrix">Feature-by-method matrix</a><a href="#r-evid">Evidence lines</a><a href="#r-conf">Conflicts and corrections</a><a href="#r-gaps">Gaps checklist</a>
+  <a href="#r-anode">The anode</a><a href="#r-data">Dataset and correlation</a><a href="#r-results">Results register</a><a href="#r-concl">Provisional conclusions</a><a href="#r-matrix">Feature-by-method matrix</a><a href="#r-evid">Evidence lines</a><a href="#r-conf">Conflicts and corrections</a><a href="#r-gaps">Gaps checklist</a>
+</div></nav>
+<nav id="nav-sim" hidden><div class="in">
+  <a href="#s-interp">What we simulate</a><a href="#s-batch">Virtual batch</a><a href="#s-metrics">Metrics</a><a href="#s-options">Detection options</a><a href="#s-model">Build outline</a><a href="#s-steps">Checklist</a>
 </div></nav>
 <main>
 <div class="pane" id="pane-hub">
@@ -91,7 +95,7 @@ td.m.weak{outline:2px dashed var(--warn);outline-offset:-3px}
     <div class="tile"><b>Next deadline</b><span id="nextdl" class="big"></span><div class="note" id="nextname"></div></div>
     <div class="tile"><b>Final due</b><span class="big" id="finalcd"></span><div class="note">12/9/2026, 8:00 AM EST, Canvas</div></div>
     <div class="tile"><b>Simulation software</b><span class="big" id="swchosen">Not chosen</span><div class="note">Pick in the Simulation section</div></div>
-    <div class="tile"><b>Data files</b><span class="big">Unopened</span><div class="note">RAR / Excel / STL: wait for your go-ahead</div></div>
+    <div class="tile"><b>Data files</b><span class="big">Opened</span><div class="note">Extracted 2026-11-16; analysed in the Analysis folder</div></div>
     <div class="tile"><b>Weight</b><span class="big">25%</span><div class="note">Problem 5 · Lit review 5 · Scope+method 10 · Results 5</div></div>
   </div>
   <h3>Milestones</h3>
@@ -284,6 +288,47 @@ flowchart TD
   <p class="note">Not found: Sun et al. 2021 and Zeng et al. 2024 (cited on slide 5 of the PDF). Searches did not identify them; ask the professor or look in the Kang 2021 reference list.</p>
 </div></section>
 
+<section id="r-data"><h2>The dataset: what each column means, and what drives feasibility</h2><div class="body">
+  <p class="note">Analysis run 2026-11-16 on the 1000 designs (Designdata.xlsx plus all 1000 STL files) with offline scripts in the Analysis folder: <code>stl_basic_features.py</code> (geometry from every STL) and <code>feature_correlation.py</code> (correlation, mutual information, rules). The PDF does not say what the columns mean, so the meanings below are inferred from the data. Treat them as hypotheses until confirmed with the professor or Kang et al. 2021. Verify the numbers yourself before they go into the report.</p>
+
+  <div class="warnbox"><b>Main finding [High for the rule, Medium for the meanings]:</b> in this dataset FEASIBILITY = 1 exactly when <b>d1 &gt; 2.0, d3 &gt; 2.0, d2 = 1 and d4 = 1</b>. This rule classifies all 1000 designs correctly (500 of 500 feasible, 500 of 500 infeasible). The smallest feasible values are d1 = 2.05 and d3 = 2.02. That matches the 2 mm printer limit (nozzle and motors) reported for this design family in Chilukuri et al. 2024. Dropping d2 changes only 2 designs (99.8% accurate), so d2 adds almost nothing beyond d4. The design variables x1 to x5 alone predict feasibility with 92.4% cross-validated accuracy (a depth-8 tree), because they control d1 to d4.</div>
+
+  <h3>Column meanings (inferred)</h3>
+  <div class="tblwrap"><table id="coltbl"><thead><tr><th>Column</th><th>Likely meaning</th><th>Evidence in the data</th><th>Confidence</th></tr></thead><tbody></tbody></table></div>
+
+  <h3>Why designs are infeasible (500 infeasible designs)</h3>
+  <div class="tblwrap"><table id="reasontbl"><thead><tr><th>Condition failed</th><th>Designs</th><th>Failing only this one</th></tr></thead><tbody></tbody></table></div>
+  <p class="note">A design can fail several conditions at once (213 fail two or more of d1, d3 and d4). The columns overlap, so the counts do not add up to 500.</p>
+
+  <h3>Correlation matrix (Spearman, 1000 designs)</h3>
+  <p class="note">Cells show the rank correlation. Bold outline = |rho| of at least 0.30 (strong enough to matter). Row and column labels in green = significant association with FEASIBILITY after Bonferroni correction (p below 0.05 over 16 tests); grey = not significant. Hover a cell for the p-value. Spearman is used because many columns are binary or non-linear; x3 is also non-monotonic, so abs(x3) is included. d-variables and STL measures are outputs, not design choices, so they are partly circular with FEASIBILITY.</p>
+  <div class="tblwrap"><table id="cormtx" style="font-size:11.5px"></table></div>
+
+  <h3>Association with FEASIBILITY (ranked)</h3>
+  <div class="tblwrap"><table id="assoctbl"><thead><tr><th>Feature</th><th>Spearman with FEASIBILITY</th><th>Mutual information</th><th>Significant (Bonferroni)</th><th>Role</th></tr></thead><tbody></tbody></table></div>
+  <p class="note">Mutual information (higher = more information about the label) catches non-linear effects that correlation misses, for example x3: its correlation is near zero (-0.04), but feasibility is 60-65% for x3 between -1 and 1 and falls to 20-24% at both extremes.</p>
+
+  <h3>The aspects that have to be right (data plus literature)</h3>
+  <div class="tblwrap"><table><thead><tr><th>#</th><th>Aspect</th><th>What the data says</th><th>What the literature says</th></tr></thead><tbody>
+    <tr><td>1</td><td><b>Connectivity</b> (d4, d2)</td><td>d4 = 0 in 265 designs, all infeasible; 135 designs fail only on this. d2 = 0 in 34, all infeasible. Single-piece meshes: all 500 feasible designs are one piece (infeasible: on average 37 pieces).</td><td>Santoro 2017 names clogging, dead zones and diffusion limits; Chilukuri 2024 lists connectivity of features and cavities as a key anode attribute. [read]</td></tr>
+    <tr><td>2</td><td><b>Cavity (pore) size</b> at least 2 mm (d3)</td><td>269 infeasible designs fail it; 79 fail only this. Feasibility rises with d3 (rho 0.58).</td><td>Chilukuri 2024: minimum cavity size is an important attribute, left for future work. Pores must let liquid in and be cleared of powder or resin. [read]</td></tr>
+    <tr><td>3</td><td><b>Solid feature size</b> at least 2 mm (d1)</td><td>185 infeasible designs fail it; 61 fail only this.</td><td>Chilukuri 2024 uses minimum feature size (2 mm limit) as the manufacturability metric. [read]</td></tr>
+    <tr><td>4</td><td><b>Cell count</b> (x2)</td><td>Feasible share: 80% (1 cell), 70% (2), 34% (3), 13% (4), 0% (5). More cells make features and cavities smaller.</td><td>Calignano 2015 chose a 4 mm cell as a compromise between area, manufacturability and open voids. [partial read]</td></tr>
+    <tr><td>5</td><td><b>Lattice type</b> (x1)</td><td>Type O: 0 of 107 feasible. B 68%, P 63%, G 55%, I 42%, D 38%. Cramer V 0.40.</td><td>Not covered in the sources read.</td></tr>
+    <tr><td>6</td><td><b>Level-set offset</b> (x3)</td><td>Non-monotonic: 20% feasible at x3 below -1, about 60-65% near 0, 24% above 1. Linear correlation misses it.</td><td>Not covered in the sources read.</td></tr>
+    <tr><td>-</td><td>Not important: x4, x5, x6</td><td>x4 (mesh resolution) and x5 (rotation) are not significant (p above 0.17). x6 is constant.</td><td>-</td></tr>
+  </tbody></table></div>
+  <p class="note">The literature on the electrical and biological side of the anode (conductivity, surface chemistry, coating, biocompatibility) is in the anode section above. None of those can be seen in the dataset, because the STL files only describe geometry. The dataset's feasibility label is purely about whether the geometry can be printed.</p>
+
+  <h3>Meaning for the inspection system [Medium]</h3>
+  <ul>
+    <li>The faults to find are the four conditions: a solid feature thinner than about 2 mm, a cavity smaller than about 2 mm, a disconnected solid, and a disconnected or trapped void.</li>
+    <li>All four are geometric. A scanner must measure thickness and pore size to better than a fraction of 2 mm, and must see whether pores connect through the interior. Connectivity of interior pores is the part surface scanners cannot see directly.</li>
+    <li>The feasible designs are barely above the limit (smallest d1 2.05, d3 2.02), so measurement accuracy near 2 mm matters: a scan error of a few tenths of a millimetre would misclassify borderline designs.</li>
+  </ul>
+  <p class="note">Not done yet: I did not independently re-measure feature sizes from the meshes to confirm the d1 and d3 definitions. That needs a voxel-based thickness analysis (next step). Only geometry that could be read directly from the STL files (size, volume, area, number of pieces, mesh edge length) was measured.</p>
+</div></section>
+
 <section id="r-results"><h2>Results register (what is done and can go into the report)</h2><div class="body">
   <div class="row"><select id="rsec"><option value="">All report sections</option></select><span id="rcount" class="note"></span></div>
   <div class="tblwrap"><table id="rtbl"><thead><tr><th>Date</th><th>Report section</th><th>Result</th><th>Source</th><th>Confidence / status</th></tr></thead><tbody></tbody></table></div>
@@ -319,6 +364,69 @@ flowchart TD
   <div id="egapchk"></div><div class="row"><span id="egapsum" class="note"></span></div>
 </div></section>
 </div><!-- /pane-report -->
+
+<div class="pane" id="pane-sim" hidden>
+<p class="note" style="margin:12px 0 0">Working interpretation of "simulate the dataset", added 2026-11-16 from your reading. The professor has not confirmed it. All earlier detection options are kept (see the options table).</p>
+
+<section id="s-interp"><h2>What we are simulating</h2><div class="body">
+  <ul>
+    <li><b>Idea:</b> simulate a dataset (batch) of parts with defects and without defects, run it through the designed inspection system, and measure how much time the system takes and how many defects it catches.</li>
+    <li><b>Goal it serves:</b> detect the most faults in the least time (your decision of 2026-10-31).</li>
+    <li><b>Also covers the slide 4 wording "verify the data quality":</b> the quality of the simulated scan data (coverage, density, noise) is reported next to the detection and time results.</li>
+    <li><b>Open point:</b> confirm with Prof. Jin that this is what "simulate the dataset" means.</li>
+  </ul>
+</div></section>
+
+<section id="s-batch"><h2>Virtual batch: where the defects come from (keep all options)</h2><div class="body">
+  <div class="tblwrap"><table><thead><tr><th>Option</th><th>What it is</th><th>Pros</th><th>Cons</th></tr></thead><tbody>
+    <tr><td><b>A. Use the dataset labels</b></td><td>1000 real designs; infeasible = defective. The data now shows what makes a design infeasible: solid feature below 2 mm, cavity below 2 mm, disconnected solid, disconnected or trapped void (see Report tab, dataset section).</td><td>Real geometry; ground truth is known exactly; no invented defect model.</td><td>Defects are design-level, not random print flaws; 50% defect rate is unrealistically high; defect location is not marked.</td></tr>
+    <tr><td><b>B. Inject defects into the STLs</b></td><td>Take good designs and add faults at chosen rates and sizes: thin or broken struts, blocked pores, warping, surface roughness.</td><td>Full control of type, size, location and prevalence; realistic low defect rates.</td><td>Needs literature to justify defect types and sizes; more work.</td></tr>
+    <tr><td><b>C. Combine A and B</b></td><td>Use the label-based defects plus injected process faults on feasible parts.</td><td>Covers both design and process faults.</td><td>Largest scope; risk of overreaching (see Scope).</td></tr>
+  </tbody></table></div>
+  <p class="note">Parameters to fix in any option: defect prevalence (dataset 50%; real lines far lower), defect types and sizes, how many parts per batch, arrival rate.</p>
+</div></section>
+
+<section id="s-metrics"><h2>What to measure</h2><div class="body">
+  <ul>
+    <li><b>Time:</b> inspection time per part, cycle time, throughput (parts per hour), utilisation of each station, queue length.</li>
+    <li><b>Detection:</b> defects caught (true positive rate), defects missed (escape rate), false alarms (false positive rate), accuracy, per defect type.</li>
+    <li><b>Faults found versus time:</b> the curve for "most faults in least time" and the points where adding scan time stops helping.</li>
+    <li><b>Data quality of the simulated scan:</b> surface coverage, point density, noise, registration error.</li>
+    <li><b>Cost (optional):</b> cost per part inspected, if the scope allows.</li>
+  </ul>
+</div></section>
+
+<section id="s-options"><h2>Defect detection options (all kept)</h2><div class="body">
+  <p class="note">Same seven methods and the hybrid as in the Report tab matrix. The matrix says which features each method can see; the simulation turns that into a detection probability per defect type.</p>
+  <ul>
+    <li><b>M1 Structured-light scanner:</b> outer geometry; limited by hidden surfaces.</li>
+    <li><b>M2 Laser line scanner:</b> outer geometry; robot-mountable.</li>
+    <li><b>M3 Photogrammetry:</b> outer geometry; lowest accuracy in the sources found.</li>
+    <li><b>M4 Contact probe (CMM):</b> exterior points only; slow.</li>
+    <li><b>M5 X-ray CT:</b> sees inside; slowest and most costly.</li>
+    <li><b>M6 Ultrasonic, eddy current, thermography, resonance:</b> global pass/fail for some missing-strut cases; cannot locate or count.</li>
+    <li><b>M7 In-process layer imaging:</b> inside the printer, not a separate cell.</li>
+    <li><b>Hybrid:</b> surface scan on every part, CT only on flagged parts.</li>
+    <li><b>Layouts:</b> robot arm plus scanner, turntable plus fixed scanner, gantry or fixed multi-camera, conveyor stations, inline in the printer, combinations.</li>
+  </ul>
+</div></section>
+
+<section id="s-model"><h2>How the simulation could be built (outline)</h2><div class="body">
+  <ol>
+    <li><b>Defect model:</b> pick the batch option above; define defect types and sizes.</li>
+    <li><b>Detection model:</b> for each method, probability of detecting each defect type, from the capability matrix, the scan geometry (visibility, incidence angle, occlusion) and sensor noise.</li>
+    <li><b>Timing model:</b> a discrete-event simulation of the cell: load, move, scan (per viewpoint), analyse, unload; one or more robots, turntables or stations.</li>
+    <li><b>Run the batch</b> through each layout and method set; record the metrics above.</li>
+    <li><b>Compare 2 to 3 layouts or method sets</b> on detection versus time; verify the results manually.</li>
+  </ol>
+  <p class="note">Candidate tools are listed on the hub (Simulation software). A discrete-event library such as SimPy fits the timing model and Open3D or trimesh fits the scan geometry [Medium: suggestion, not decided].</p>
+</div></section>
+
+<section id="s-steps"><h2>Simulation plan checklist</h2><div class="body">
+  <div id="simchk"></div><div class="row"><span id="simsum" class="note"></span></div>
+</div></section>
+</div><!-- /pane-sim -->
+
 
 </main>
 <script>
@@ -358,7 +466,7 @@ var TODO=[
  ['2. Literature review (due 11/9)',[
   ['l1','Read 10+ journal papers (full text, not abstracts)'],['l2','Cover: AM defects in lattices, robotic scan view planning, point-cloud quality, inspection time/cost, NDT methods'],['l3','Build the methodology tree'],['l4','Record each paper in the Sources table and the Tracker log'],['l5','Collect feature-by-method evidence and cross-check it (done 2026-10-31)',true],['l6','Choose which research gaps you are going for (Report content tab)'],['l7','Read the 13 evidence-file papers yourself (numbers and quotes unverified)']]],
  ['3. Set up simulation',[
-  ['s1','Choose robot/cell simulation software'],['s2','Choose scan/data tool (Open3D, trimesh, ...)'],['s3','Build the cell layout: robot, sensor, turntable/fixture'],['s4','Get your go-ahead, then extract the RAR and look at the Excel and STL files'],['s5','Check the sample STL-processing code mentioned on slide 6']]],
+  ['s1','Choose robot/cell simulation software'],['s2','Choose scan/data tool (Open3D, trimesh, ...)'],['s3','Build the cell layout: robot, sensor, turntable/fixture'],['s4','Get your go-ahead, then extract the RAR and look at the Excel and STL files',true],['s5','Check the sample STL-processing code mentioned on slide 6']]],
  ['4. Generate and analyze data (due 11/16 for first pass)',[
   ['d1','Define and inject manufacturing errors into STLs (justify from literature)'],['d2','Run virtual scans from several viewpoints and make point clouds'],['d3','Compute data-quality metrics: coverage, density, noise, registration error, defect detection'],['d4','Compare 2-3 layouts: faults found vs time'],['d5','Manually verify the results'],['d6','Write conclusions in the Tracker log']]],
  ['5. Write-up (draft 12/2, final 12/9)',[
@@ -457,11 +565,75 @@ var SW=[
   sr.onchange=upd;ssn.onchange=upd;upd();
 })();
 
+var CORR={"columns":["x2","x3","abs_x3","x4","x5_rot90","d1","d2","d3","d4","solid_frac","area_per_vol","ntri","mean_edge","conn_pieces","single_piece","FEASIBILITY"],"spearman":[[1.0,-0.015,0.024,0.007,0.011,-0.676,-0.019,-0.82,-0.204,0.046,0.657,0.771,-0.049,0.251,-0.197,-0.582],[-0.015,1.0,0.019,-0.003,-0.03,0.523,0.274,-0.175,-0.198,0.891,-0.609,0.074,-0.138,0.137,-0.127,-0.037],[0.024,0.019,1.0,0.009,0.04,-0.085,-0.238,-0.129,-0.209,0.098,-0.02,-0.123,-0.075,0.339,-0.348,-0.296],[0.007,-0.003,0.009,1.0,0.056,0.021,-0.002,-0.068,0.01,0.023,0.014,-0.438,0.877,0.016,-0.02,-0.039],[0.011,-0.03,0.04,0.056,1.0,-0.021,0.004,0.001,-0.067,-0.024,0.024,-0.057,0.123,0.055,-0.054,-0.032],[-0.676,0.523,-0.085,0.021,-0.021,1.0,0.282,0.46,-0.12,0.57,-0.885,-0.475,-0.017,0.038,-0.068,0.341],[-0.019,0.274,-0.238,-0.002,0.004,0.282,1.0,0.157,-0.113,0.275,-0.162,0.176,0.052,-0.34,0.352,0.188],[-0.82,-0.175,-0.129,-0.068,0.001,0.46,0.157,1.0,0.193,-0.262,-0.46,-0.667,-0.022,-0.284,0.245,0.576],[-0.204,-0.198,-0.209,0.01,-0.067,-0.12,-0.113,0.193,1.0,-0.407,0.095,-0.172,0.067,-0.693,0.696,0.6],[0.046,0.891,0.098,0.023,-0.024,0.57,0.275,-0.262,-0.407,1.0,-0.602,0.142,-0.077,0.373,-0.369,-0.195],[0.657,-0.609,-0.02,0.014,0.024,-0.885,-0.162,-0.46,0.095,-0.602,1.0,0.53,0.112,-0.088,0.109,-0.332],[0.771,0.074,-0.123,-0.438,-0.057,-0.475,0.176,-0.667,-0.172,0.142,0.53,1.0,-0.358,0.065,-0.034,-0.396],[-0.049,-0.138,-0.075,0.877,0.123,-0.017,0.052,-0.022,0.067,-0.077,0.112,-0.358,1.0,-0.062,0.056,0.043],[0.251,0.137,0.339,0.016,0.055,0.038,-0.34,-0.284,-0.693,0.373,-0.088,0.065,-0.062,1.0,-0.99,-0.527],[-0.197,-0.127,-0.348,-0.02,-0.054,-0.068,0.352,0.245,0.696,-0.369,0.109,-0.034,0.056,-0.99,1.0,0.533],[-0.582,-0.037,-0.296,-0.039,-0.032,0.341,0.188,0.576,0.6,-0.195,-0.332,-0.396,0.043,-0.527,0.533,1.0]],"p":[[0.0,0.6441729918211655,0.4497721039572579,0.8195705060837438,0.7195150316695297,2.9672798888738407e-134,0.5403339594119196,9.816412815189582e-244,6.74035114864241e-11,0.14645906922411106,1.5553541701273148e-124,3.627835042867763e-198,0.1219147650672972,8.558819309144822e-16,3.6025255765378657e-10,9.21255076389041e-92],[0.6441729918211655,0.0,0.5478323538104164,0.9344557955204867,0.34324253876655597,3.820494971743283e-71,1.0810329613882933e-18,2.3604100018321723e-08,2.787059475164675e-10,0.0,1.0999879574220496e-102,0.01954880272349655,1.2046046066172249e-05,1.467229177662325e-05,5.324676193794419e-05,0.24167982045531636],[0.4497721039572578,0.5478323538104164,0.0,0.7700318158776879,0.20895918424096696,0.007309389151576137,2.3926903732003056e-14,4.052088250385859e-05,2.423413141494564e-11,0.0019207879309913085,0.5361014899112252,9.900790472380469e-05,0.0174102354408499,2.3217265286460894e-28,7.317550738495492e-30,1.1401055375497181e-21],[0.8195705060837438,0.9344557955204866,0.7700318158776879,0.0,0.07892607711945732,0.5122957538626902,0.9381750155309853,0.032345211241466214,0.7509922860443833,0.471522380856308,0.651825424634717,5.1250602180444376e-48,0.0,0.6070693996308228,0.5264776209704544,0.21621352241721437],[0.7195150316695296,0.34324253876655597,0.20895918424096688,0.07892607711945732,0.0,0.5132284283455318,0.9056482684799664,0.9784347933816173,0.033314968457204226,0.45740371645303646,0.44100458344451776,0.07157710831489361,0.00010050135451981519,0.08181612427387182,0.08536328825570802,0.31195686666240396],[2.9672798888738407e-134,3.820494971743283e-71,0.007309389151576137,0.5122957538626902,0.5132284283455317,0.0,1.0808102472716764e-19,1.8201125337056578e-53,0.000135664639810608,2.1350938519222425e-87,0.0,2.747094105096887e-57,0.5843723569548307,0.22553977089964017,0.032360679258036096,1.0774681485699358e-28],[0.5403339594119199,1.0810329613882933e-18,2.3926903732003056e-14,0.9381750155309853,0.9056482684799664,1.0808102472716764e-19,0.0,6.24796080208086e-07,0.0003580616533800115,7.91646108323833e-19,2.51542478094523e-07,2.0010487009760696e-08,0.10009811867934496,1.7869155375713701e-28,1.3997789825012694e-30,2.2531287698912805e-09],[9.816412815185558e-244,2.3604100018321723e-08,4.052088250385859e-05,0.032345211241466214,0.9784347933816173,1.8201125337055162e-53,6.24796080208086e-07,0.0,6.998740702980942e-10,3.7689092471595016e-17,2.0720703945401093e-53,1.8999215457137784e-129,0.47823390596827087,4.596220860299477e-20,4.085345582111394e-15,1.6219156582274207e-89],[6.740351148642352e-11,2.787059475164675e-10,2.423413141494564e-11,0.7509922860443833,0.033314968457204226,0.00013566463981060803,0.0003580616533800115,6.998740702980942e-10,0.0,2.744682828709107e-41,0.002575904580718775,4.1724708906731476e-08,0.03351878742371595,4.2760684672012565e-144,1.1101983014373924e-145,5.2779923790940775e-99],[0.14645906922411112,0.0,0.0019207879309913085,0.471522380856308,0.45740371645303646,2.1350938519222425e-87,7.91646108323833e-19,3.7689092471595016e-17,2.7446828287091996e-41,0.0,8.50444311936015e-100,6.499933186184089e-06,0.01480436054525644,1.971141501068474e-34,1.1815901348170648e-33,5.185709536166561e-10],[1.5553541701273148e-124,1.099987957421983e-102,0.5361014899112252,0.651825424634717,0.4410045834445178,0.0,2.51542478094523e-07,2.0720703945401093e-53,0.002575904580718775,8.50444311936015e-100,0.0,1.8124739475723687e-73,0.0004108133621441075,0.005315754536158179,0.0005338221829153315,3.8725986278327856e-27],[3.627835042867763e-198,0.01954880272349655,9.900790472380469e-05,5.1250602180444376e-48,0.07157710831489361,2.747094105096887e-57,2.0010487009760696e-08,1.8999215457137784e-129,4.1724708906731476e-08,6.499933186184131e-06,1.8124739475723687e-73,0.0,1.2643706274533522e-31,0.040914155015805496,0.2863137356063802,5.694260866407701e-39],[0.1219147650672972,1.2046046066172181e-05,0.0174102354408499,0.0,0.00010050135451981519,0.5843723569548307,0.10009811867934496,0.47823390596827087,0.03351878742371595,0.01480436054525644,0.0004108133621441075,1.2643706274533522e-31,0.0,0.05157019573846763,0.07926289370619811,0.17469220247704229],[8.558819309144822e-16,1.467229177662325e-05,2.3217265286460244e-28,0.6070693996308228,0.08181612427387178,0.22553977089964017,1.7869155375713701e-28,4.596220860299477e-20,4.2760684672012565e-144,1.971141501068474e-34,0.005315754536158179,0.040914155015805455,0.051570195738467633,0.0,0.0,1.2452022099701363e-72],[3.602525576537836e-10,5.324676193794463e-05,7.317550738495704e-30,0.5264776209704544,0.08536328825570808,0.032360679258036096,1.3997789825012694e-30,4.085345582111354e-15,1.1101983014373924e-145,1.1815901348170648e-33,0.0005338221829153303,0.2863137356063802,0.07926289370619805,0.0,0.0,2.3335803512692515e-74],[9.21255076389041e-92,0.24167982045531636,1.1401055375497181e-21,0.21621352241721437,0.31195686666240413,1.0774681485699506e-28,2.253128769891263e-09,1.6219156582274207e-89,5.2779923790940775e-99,5.185709536166561e-10,3.8725986278327856e-27,5.694260866407702e-39,0.17469220247704229,1.2452022099701363e-72,2.3335803512692515e-74,0.0]],"assoc":[{"feature":"x2","spearman":-0.58211,"p":0.0,"p_bonf":0.0},{"feature":"x3","spearman":-0.03706,"p":0.24168,"p_bonf":1.0},{"feature":"abs_x3","spearman":-0.29599,"p":0.0,"p_bonf":0.0},{"feature":"x4","spearman":-0.03914,"p":0.21621,"p_bonf":1.0},{"feature":"x5_rot90","spearman":-0.03201,"p":0.31196,"p_bonf":1.0},{"feature":"d1","spearman":0.34126,"p":0.0,"p_bonf":0.0},{"feature":"d2","spearman":0.18761,"p":0.0,"p_bonf":0.0},{"feature":"d3","spearman":0.57618,"p":0.0,"p_bonf":0.0},{"feature":"d4","spearman":0.60045,"p":0.0,"p_bonf":0.0},{"feature":"solid_frac","spearman":-0.19484,"p":0.0,"p_bonf":0.0},{"feature":"area_per_vol","spearman":-0.33188,"p":0.0,"p_bonf":0.0},{"feature":"ntri","spearman":-0.3964,"p":0.0,"p_bonf":0.0},{"feature":"mean_edge","spearman":0.04295,"p":0.17469,"p_bonf":1.0},{"feature":"conn_pieces","spearman":-0.52724,"p":0.0,"p_bonf":0.0},{"feature":"single_piece","spearman":0.53263,"p":0.0,"p_bonf":0.0},{"feature":"x1 (lattice type, Cramer V)","spearman":0.40307,"p":0.0,"p_bonf":0.0}],"mutual_info":{"d3":0.3071,"d1":0.2844,"d4":0.2325,"x2":0.2167,"single_piece":0.185,"solid_frac":0.1827,"area_per_vol":0.1097,"x1_O":0.0806,"x3":0.051,"d2":0.0242,"x1_B":0.0197,"x1_P":0.0093,"x1_D":0.004,"x1_I":0.0019,"x1_G":0.0009,"x5_rot90":0.0005,"x4":0.0002},"facts":{"infeasible_reasons":{"d1_le_2":185,"d3_le_2":269,"d4_zero":265,"d2_zero":34,"only_d1":61,"only_d3":79,"only_d4":135,"multiple":213,"rule_without_d2_accuracy":0.998,"infeasible_total":500},"feasible_min":{"d1":2.0518,"d3":2.0199,"d2":1,"d4":1},"rule":{"text":"FEASIBILITY = 1 if d1 > 2.0 and d3 > 2.0 and d2 = 1 and d4 = 1","tp":500,"fp":0,"fn":0,"tn":500,"accuracy":1.0},"cv_accuracy_x_only_tree_depth8":0.9239999999999998,"cv_accuracy_d_only_tree_depth3":0.9970000000000001,"feasible_share_by_x2":{"1":0.802,"2":0.703,"3":0.344,"4":0.128,"5":0.0},"feasible_share_by_x1":{"B":0.675,"D":0.385,"G":0.545,"I":0.415,"O":0.0,"P":0.626},"feasible_share_by_x3_band":{"(-1.6, -1.0]":0.196,"(-1.0, -0.5]":0.596,"(-0.5, 0.0]":0.647,"(0.0, 0.5]":0.587,"(0.5, 1.0]":0.459,"(1.0, 1.6]":0.237},"feasible_share_by_x4":{"0.1":0.538,"0.2":0.476,"0.3":0.488},"feasible_share_by_x5":{"0.0":0.516,"1.5708":0.484},"cube_edge_mm_median":20.100000381469727,"x6_unique":1,"n_designs":1000,"mean_edge_vs_x4_spearman":0.8768001919282813,"solid_frac_vs_x3_spearman":0.8914153264919544,"ntri_vs_x2_spearman":0.7714533490228808,"d1_sq_x100_integer_max_dev":0.16294399999605957,"d3_sq_x100_integer_max_dev":0.10052900000118825}};
+/* ---------- dataset analysis (generated numbers from Analysis/correlation_results.json) ---------- */
+var COLS=[
+ ['Sample_ID, STL_file_Name','Design id and its mesh file','The STL is in feasible_designs or infeasible_designs; the folder matches FEASIBILITY for all 1000 designs.','High'],
+ ['x1','Lattice type (6 codes)','Codes B 240, P 227, G 178, D 130, I 118, O 107 designs. The PDF showed 5 letters; O also exists and has 0 of 107 feasible. D, P, G, I could be the minimal-surface types Diamond, Primitive, Gyroid, IWP; B and O unknown.','Low (letter meanings)'],
+ ['x2','Number of unit cells per axis (1 to 5)','Triangle count rises with x2 (rho 0.77). The cube is about 20.1 mm wide, so the unit cell would be about 20/x2 mm. Feasible share falls from 80% (1) to 0% (5).','Medium'],
+ ['x3','Level-set offset (-1.5 to 1.5, step 0.1) that sets how much solid there is','Solid fraction of the mesh rises with x3 (rho 0.89). Feasibility is highest near 0 and low at both ends.','Medium'],
+ ['x4','Mesh or sampling resolution (0.1, 0.2, 0.3)','Mean triangle edge length follows x4 (rho 0.88). No effect on feasibility (54%, 48%, 49%).','Medium'],
+ ['x5','Rotation angle: 0 or 1.5708 (= 90 degrees)','Two values only; no effect on feasibility (52% versus 48%).','Medium'],
+ ['x6','Unused (always 0)','One unique value across 1000 designs.','High'],
+ ['d1','Size of the solid features (strut or wall thickness-like), mm','Values are sqrt(integer)/10, i.e. distances on a 0.1 mm grid; grows with solid fraction; every feasible design has d1 above 2.05.','Medium'],
+ ['d3','Size of the cavities (pore size), mm','Same sqrt(integer)/10 pattern; falls with more cells (rho -0.72) and surface area; every feasible design has d3 above 2.02.','Medium'],
+ ['d2','Binary check (0 in 34 designs)','All 34 zeros are infeasible; they are always multi-piece. Probably solid connectivity.','Low'],
+ ['d4','Binary check (0 in 265 designs)','All 265 zeros are infeasible; 135 designs fail only this. Probably connectivity of the pores (a trapped or disconnected void).','Low'],
+ ['FEASIBILITY','1 = can be printed, 0 = cannot (500 each)','Equals the rule d1 > 2, d3 > 2, d2 = 1, d4 = 1 for all 1000 designs.','High']
+];
+(function(){
+  var tb=document.querySelector('#coltbl tbody');
+  COLS.forEach(function(r){tb.insertAdjacentHTML('beforeend','<tr>'+r.map(function(c,i){return'<td>'+(i===0?'<b>'+esc(c)+'</b>':esc(c))+'</td>'}).join('')+'</tr>')});
+  var R=CORR.facts.infeasible_reasons,t2=document.querySelector('#reasontbl tbody');
+  [['d1 at most 2 mm (solid features too small)',R.d1_le_2,R.only_d1],['d3 at most 2 mm (cavities too small)',R.d3_le_2,R.only_d3],['d4 = 0 (connectivity)',R.d4_zero,R.only_d4],['d2 = 0 (connectivity)',R.d2_zero,'-'],['Two or more of the above',R.multiple,'-']].forEach(function(r){
+    t2.insertAdjacentHTML('beforeend','<tr><td>'+esc(r[0])+'</td><td>'+r[1]+'</td><td>'+r[2]+'</td></tr>')});
+})();
+
+/* correlation matrix */
+var PRETTY={x2:'x2 cells',x3:'x3 offset',abs_x3:'|x3|',x4:'x4 mesh',x5_rot90:'x5 rot90',d1:'d1 solid size',d2:'d2 flag',d3:'d3 cavity size',d4:'d4 flag',solid_frac:'solid fraction',area_per_vol:'area/volume',ntri:'triangles',mean_edge:'mesh edge',conn_pieces:'pieces',single_piece:'one piece',FEASIBILITY:'FEASIBILITY'};
+(function(){
+  var C=CORR.columns,sig={};
+  CORR.assoc.forEach(function(a){sig[a.feature]=a.p_bonf<0.05});
+  var h='<thead><tr><th></th>'+C.map(function(c){return'<th style="'+(c==='FEASIBILITY'?'background:var(--acc);color:#fff':(sig[c]?'background:rgba(31,143,78,.35)':'color:var(--mut)'))+'">'+esc(PRETTY[c]||c)+'</th>'}).join('')+'</tr></thead><tbody>';
+  C.forEach(function(a,i){
+    h+='<tr><th style="'+(a==='FEASIBILITY'?'background:var(--acc);color:#fff':(sig[a]?'background:rgba(31,143,78,.35)':'color:var(--mut)'))+'">'+esc(PRETTY[a]||a)+'</th>';
+    C.forEach(function(b,j){var r=CORR.spearman[i][j],p=CORR.p[i][j],al=Math.min(0.85,Math.abs(r)*0.85);
+      var col=r>=0?'47,95,208':'192,57,43',bold=(i!==j&&Math.abs(r)>=0.3);
+      h+='<td title="rho '+r.toFixed(3)+', p '+(p<0.001?'<0.001':p.toFixed(3))+'" style="text-align:center;background:rgba('+col+','+al+');'+(bold?'outline:2px solid var(--ink);outline-offset:-2px;font-weight:700;':'')+'">'+(i===j?'':r.toFixed(2))+'</td>'});
+    h+='</tr>'});
+  document.getElementById('cormtx').innerHTML=h+'</tbody>';
+  var ROLE={x1:'design input',x2:'design input',x3:'design input',abs_x3:'design input (derived)',x4:'design input',x5_rot90:'design input',d1:'simulation output (label component)',d2:'simulation output (label component)',d3:'simulation output (label component)',d4:'simulation output (label component)',solid_frac:'measured from STL',area_per_vol:'measured from STL',ntri:'measured from STL',mean_edge:'measured from STL',conn_pieces:'measured from STL',single_piece:'measured from STL'};
+  var MI={x2:'x2',x3:'x3',x4:'x4',x5_rot90:'x5_rot90',d1:'d1',d2:'d2',d3:'d3',d4:'d4',solid_frac:'solid_frac',area_per_vol:'area_per_vol',single_piece:'single_piece'};
+  var rows=CORR.assoc.slice().sort(function(a,b){return Math.abs(b.spearman)-Math.abs(a.spearman)}),tb=document.querySelector('#assoctbl tbody');
+  rows.forEach(function(a){var f=a.feature,key=MI[f],mi=(key&&CORR.mutual_info[key]!==undefined)?CORR.mutual_info[key].toFixed(3):(f.indexOf('x1')===0?CORR.mutual_info['x1_O'].toFixed(3)+' (x1_O)':'-');
+    tb.insertAdjacentHTML('beforeend','<tr style="'+(a.p_bonf<0.05&&Math.abs(a.spearman)>=0.3?'background:rgba(31,143,78,.18)':'')+'"><td>'+esc(PRETTY[f]||f)+'</td><td>'+a.spearman.toFixed(3)+'</td><td>'+mi+'</td><td>'+(a.p_bonf<0.05?'<span class="badge b-ok">yes</span>':'<span class="badge b-warn">no</span>')+'</td><td>'+esc(ROLE[f]||(f.indexOf('x1')===0?'design input':''))+'</td></tr>')});
+})();
+
+/* ---------- simulation tab checklist ---------- */
+var SIMSTEPS=[
+ ['m1','Confirm with Prof. Jin that "simulate the dataset" means a virtual batch run through the inspection system','confirm'],
+ ['m2','Choose the batch option: A dataset labels, B injected defects, or C both','decision'],
+ ['m3','Fix defect types, sizes and prevalence (real lines have few defects)','decision'],
+ ['m4','Define a detection probability per method and defect type (from the capability matrix and scan geometry)','model'],
+ ['m5','Choose simulation tools (timing model and scan geometry)','tools'],
+ ['m6','Build the timing model of the cell: load, scan, analyse, unload','build'],
+ ['m7','Run the batch for 2 to 3 layouts or method sets and record time, detection, escapes, false alarms','run'],
+ ['m8','Plot faults found versus time and verify the results manually','analysis']
+];
+(function(){
+  var st=ls('mse_sim',{}),box=document.getElementById('simchk');
+  function draw(){var h='',n=0;SIMSTEPS.forEach(function(g){var d=!!st[g[0]];if(d)n++;
+    h+='<div class="chk'+(d?' done':'')+'"><input type="checkbox" id="c_'+g[0]+'" data-id="'+g[0]+'" '+(d?'checked':'')+'><label for="c_'+g[0]+'">'+esc(g[1])+' <span class="chip">'+esc(g[2])+'</span></label></div>'});
+    box.innerHTML=h;document.getElementById('simsum').textContent=n+' of '+SIMSTEPS.length+' done';
+    Array.prototype.forEach.call(box.querySelectorAll('input'),function(c){c.onchange=function(){st[c.dataset.id]=c.checked;ss('mse_sim',st);draw()}})}
+  draw();
+})();
+
 /* ---------- tabs ---------- */
 (function(){
   Array.prototype.forEach.call(document.querySelectorAll('.tab'),function(b){b.onclick=function(){
     var t=b.dataset.tab;
-    ['hub','report'].forEach(function(k){document.getElementById('pane-'+k).hidden=(k!==t);document.getElementById('nav-'+k).hidden=(k!==t);document.getElementById('tabbtn-'+k).className='tab'+(k===t?' on':'')});
+    ['hub','report','sim'].forEach(function(k){document.getElementById('pane-'+k).hidden=(k!==t);document.getElementById('nav-'+k).hidden=(k!==t);document.getElementById('tabbtn-'+k).className='tab'+(k===t?' on':'')});
     window.scrollTo(0,0)}});
 })();
 
@@ -479,6 +651,10 @@ var RESULTS=[
  ['2026-10-31','Literature review','No retrieved paper uses a TPMS or sheet lattice for inspection metrology; all specimens are strut-based.','Evidence file limitation 4','[Medium]'],
  ['2026-11-16','Problem formulation','Product background compiled: what the MFC anode is, how it works, how it is made, and its most significant aspects (see The anode section).','Santoro 2017; Chung and Dhar 2021; You 2020; Calignano 2015; Chilukuri 2024','Partial reads; verify numbers'],
  ['2026-11-16','Problem formulation','The instructor-group paper (Chilukuri 2024) uses minimum feature size (MFS) as the manufacturability metric: 2,735 anode designs, MFS 1.51-15.97 mm, nozzle and motor limit 2 mm. Its design source is Kang, Deng and Jin 2021, the paper cited in the project PDF.','Chilukuri 2024 pp. 1-10 (read directly)','[Verified] read; link to our 1000-design set is a hypothesis [Low]'],
+ ['2026-11-16','Results','Opened the dataset (1000 designs, all STL files valid). In this dataset FEASIBILITY = 1 exactly when d1 > 2.0, d3 > 2.0, d2 = 1 and d4 = 1 (500 of 500 feasible and 500 of 500 infeasible classified correctly). Smallest feasible d1 2.05, d3 2.02; matches the 2 mm printer limit in Chilukuri 2024.','Analysis/feature_correlation.py','[High] rule; meanings of d1-d4 are [Medium/Low]'],
+ ['2026-11-16','Results','Inferred column meanings: x1 lattice type (6 codes incl. O), x2 cells per axis (1-5), x3 level-set offset, x4 mesh resolution, x5 rotation 0 or 90 degrees, x6 unused, d1 solid-feature size, d3 cavity size, d2 and d4 binary connectivity checks.','Analysis/stl_basic_features.py; feature_correlation.py','[Medium]; confirm with professor / Kang 2021'],
+ ['2026-11-16','Results','Strongest associations with FEASIBILITY: d4 (0.60), x2 (-0.58), d3 (0.58), single-piece mesh (0.53), lattice type x1 (Cramer V 0.40). Not significant: x4, x5, x3 (linear); x3 matters non-linearly (feasible about 60-65% near 0, 20-24% at both extremes).','Analysis/correlation_results.json','[High] statistics; Spearman, Bonferroni-corrected'],
+ ['2026-11-16','Methodology','Interpretation of the project: simulate a batch of parts with and without defects, run it through the inspection system, measure time and defects caught (user reading of slide 4; not confirmed by the professor). Planned in the Simulation plan tab.','User, chat 2026-11-16','Working interpretation'],
  ['2026-11-16','Methodology','If feasibility in our dataset is tied to MFS in millimetres, the CT thin-strut accuracy dispute (sub-0.3 mm struts) matters much less, and surface scanners become more plausible for outer features. Check on the STLs and Excel.','Chilukuri 2024 vs evidence file','[Medium]; needs data']
 ];
 (function(){
@@ -498,6 +674,7 @@ var CONCL=[
  'Provisional eliminations: contact CMM (exterior only, slow), photogrammetry (lowest accuracy, no lattice evidence), resonance/ultrasonic/thermography (global result, cannot locate or count). [Medium]',
  'In-process imaging sits inside the printer, so it does not fit a separate robotic inspection cell unless the professor says otherwise. [Medium]',
  'Candidate set going into the layout stage: structured-light or laser-line surface scan, X-ray CT, and a hybrid (surface scan on every part, CT on flagged parts). [Medium]',
+ 'New 2026-11-16 (data): the faults that make a design infeasible are geometric: solid features or cavities below about 2 mm, and disconnected solid or void. The scanner must measure size to a fraction of 2 mm and see interior connectivity. Feasible designs sit just above the limit (smallest 2.05 and 2.02 mm), so accuracy near 2 mm matters. [Medium]',
  'New 2026-11-16: the instructor-group paper uses millimetre-scale minimum feature size (1.51-15.97 mm) as the manufacturability metric, so the sub-0.3 mm CT accuracy dispute may not apply to our parts. [Medium, confirm on the STLs]',
  'If the data shows interior features drive infeasibility, CT is required and speed must come from the hybrid; if exterior features drive it, a robot-mounted surface scanner can win. [Medium]'
 ];
@@ -591,6 +768,9 @@ var SRC=[
  ['Design_1000data-1.rar (348 MB; 1000 designs, STL + Excel)','../Design_1000data-1.rar','Dataset. NOT opened yet. Needs 7-Zip/WinRAR.','local',1],
  ['MSE_Project_Handoff.md','../MSE_Project_Handoff.md','Master chat handoff: sensing options, research gaps','local',1],
  ['MSE_Project_MASTER.md','../MSE_Project_MASTER.md','Complete record of everything in this project','local',1],
+ ['Analysis/stl_basic_features.py','../Analysis/stl_basic_features.py','Reads every STL: size, volume, area, pieces, mesh edge','local',1],
+ ['Analysis/feature_correlation.py','../Analysis/feature_correlation.py','Correlation matrix, mutual information, feasibility rule','local',1],
+ ['Analysis/correlation_results.json','../Analysis/correlation_results.json','All numbers shown in the dataset section','local',1],
  ['Feature by method.md (literature evidence file)','../Claude/Feature by method.md','Evidence for 7 methods x 12 features; cross-checked in MASTER sec. 18','local',1],
  ['Kang, Deng, Jin 2021, ASME JCISE 21(6) 061008','https://doi.org/10.1115/1.4050984','Instructor reference; source of the anode designs (DOI verified in Crossref; not read yet)','ext',0],
  ['Chilukuri, Song, Kang, Jin 2024, ASME MSEC2024-125075','https://par.nsf.gov/servlets/purl/10510447','Instructor-group paper on MFC anode manufacturability (read by Claude)','ext',0],
@@ -642,7 +822,7 @@ var RULES=[
  'Due 8:00 AM EST on 12/9/2026 on Canvas. Late: 0-24h max 75% (18.75), 24-48h max 50% (12.5), after 48h 0.',
  'Instructor owns all code and data copyright; get written permission from Dr. Jin (jran5@vt.edu) before any reuse.',
  'Reports scoring 22 or more may be recommended for conference submission. A small scope leads to a low score.',
- 'Do not open the RAR, Excel or STL files until you say so.',
+ 'The data files were opened on 2026-11-16 at your request. Results must be verified by you manually before use.',
  'Claude gives outlines, options and explanations only; tags confidence on factual claims; flags gaps instead of guessing.'
 ];
 document.getElementById('rulelist').innerHTML=RULES.map(function(r){return'<li>'+esc(r)+'</li>'}).join('');

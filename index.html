@@ -80,7 +80,7 @@ td.m.weak{outline:2px dashed var(--warn);outline-offset:-3px}
   <a href="#overview">Overview</a><a href="#flow">Flowcharts</a><a href="#todo">Checklist</a><a href="#log">Tracker log</a><a href="#scan">Scan methods</a><a href="#sim">Simulation software</a><a href="#scope">Scope</a><a href="#sources">Sources</a><a href="#rules">Rules</a><a href="#open">Open questions</a>
 </div></nav>
 <nav id="nav-report" hidden><div class="in">
-  <a href="#r-results">Results register</a><a href="#r-concl">Provisional conclusions</a><a href="#r-matrix">Feature-by-method matrix</a><a href="#r-evid">Evidence lines</a><a href="#r-conf">Conflicts and corrections</a><a href="#r-gaps">Gaps checklist</a>
+  <a href="#r-anode">The anode</a><a href="#r-results">Results register</a><a href="#r-concl">Provisional conclusions</a><a href="#r-matrix">Feature-by-method matrix</a><a href="#r-evid">Evidence lines</a><a href="#r-conf">Conflicts and corrections</a><a href="#r-gaps">Gaps checklist</a>
 </div></nav>
 <main>
 <div class="pane" id="pane-hub">
@@ -197,6 +197,92 @@ flowchart TD
 
 <div class="pane" id="pane-report" hidden>
 <p class="note" style="margin:12px 0 0">Everything here feeds the final report (problem, literature review, method, results). Claude adds to it whenever a step is completed. Items marked "verify" must be checked by you in the source before they go into the report. Full detail: MSE_Project_MASTER.md sections 17 and 18.</p>
+
+<section id="r-anode"><h2>The product: the MFC anode (what it is, how it works, how it is made, what matters)</h2><div class="body">
+  <p class="note">Built 2026-11-16 from five papers read through a fetch tool (DOIs verified in Crossref). Only the instructor-group paper was read by me page by page; the other four were read partly (the tool truncated long pages), so numbers are tagged and must be checked in the papers before they go into the report. See the reading-status table at the end of this section.</p>
+
+  <h3>1. What it is</h3>
+  <ul>
+    <li><b>Microbial fuel cell (MFC):</b> a device where electroactive bacteria break down organic matter (for example acetate, or wastewater) and pass the electrons to an electrode, which produces electric current. [Santoro 2017, read]</li>
+    <li><b>The anode</b> is the electrode the bacteria live on. It holds the biofilm, collects its electrons and carries them into the circuit. [Santoro 2017, read]</li>
+    <li><b>In this project</b> the anode is a porous 3D lattice cube. The instructor-group paper describes the anode as a 3D topology designed for additive manufacturing, with design knowledge learned from historical anode data. [Chilukuri 2024, read]</li>
+    <li><b>Typical anode materials in the literature</b> are carbon cloth, felt, brush and paper, graphite, steel, and 3D-printed polymer, resin or metal. Carbon felt and cloth have high area and conductivity; metals such as copper and nickel can be toxic to the bacteria; plain printed PLA is not conductive. [Santoro 2017; Chung and Dhar 2021; You 2020]</li>
+  </ul>
+
+  <h3>2. How it works (step by step)</h3>
+  <ol>
+    <li>The liquid (influent) carries organic matter, such as acetate or wastewater, past the anode.</li>
+    <li>Electroactive bacteria (the review names Geobacter sulfurreducens, Shewanella and others) form a biofilm on the anode surface and oxidise the organics.</li>
+    <li>Electrons reach the anode by direct contact (outer-membrane cytochromes), by conductive pili or nanowires, or through redox mediators the bacteria release. [Santoro 2017]</li>
+    <li>Electrons travel through an external circuit to the cathode, which gives usable power. Protons move through the liquid or a membrane to the cathode.</li>
+    <li>At the cathode, oxygen is usually the oxidant. The oxygen reduction reaction is often the limiting step. [Santoro 2017]</li>
+    <li>An ion-exchange membrane is common, but membrane-less designs work with some loss from oxygen diffusion. [Santoro 2017; You 2020]</li>
+  </ol>
+  <p class="note">The slide 5 picture shows a column reactor with five anode modules M1 to M5, pumps for influent, effluent and catholyte circulation, and sampling ports. The PDF does not explain it further.</p>
+
+  <h3>3. How it is made (additive manufacturing routes found in the literature)</h3>
+  <div class="tblwrap"><table><thead><tr><th>Route</th><th>Process and material</th><th>Making it conductive and finishing</th><th>Source</th></tr></thead><tbody>
+    <tr><td>Polymer, extrusion</td><td>FDM printing of PLA filament; final anode a 30 mm cylinder with a Schwarz P minimal-surface unit cell, 0.25 mm resolution</td><td>Coated with a graphite-carbon ink (graphite powder, polyurethane glue, petroleum spirit); a double coat was chosen because more coats started blocking the holes; nickel spray tested as an alternative</td><td>You 2020 (partial read)</td></tr>
+    <tr><td>Metal, powder bed</td><td>Selective laser melting of AlSi10Mg on an EOS machine; Schwartz Diamond lattice, 4 mm unit cell, 20% volume fraction, struts about 0.85 mm (theoretical), 30 um layers</td><td>Shot peening with 100-200 um zirconia beads to remove loose powder and improve finish; diamond lattice is self-supporting, so no supports are needed</td><td>Calignano 2015 (partial read; some details in the tool summary conflict, only text read in full is used)</td></tr>
+    <tr><td>Resin, light curing</td><td>UV-curable resin printed as a porous structure</td><td>Carbonised to make it conductive; or copper-modified</td><td>Bian 2018a/b, as reported by Chung and Dhar 2021</td></tr>
+    <tr><td>This project's dataset</td><td>The process is not named in the pages I read. The paper says the minimum feature size is set by the nozzle diameter and printer motors, 2 mm in their case study, which suggests an extrusion-type printer [Medium: inference]</td><td>Not on the pages read</td><td>Chilukuri 2024 (read)</td></tr>
+  </tbody></table></div>
+  <p class="note">General steps: design the lattice, export a mesh (STL), slice, print layer by layer, clean off supports or loose powder, make the part conductive and biocompatible (coat, carbonise or plate), assemble with the cathode, inoculate with bacteria.</p>
+
+  <h3>4. The most significant aspects of the anode</h3>
+  <div class="tblwrap"><table><thead><tr><th>Aspect</th><th>Why it matters</th><th>What the sources say</th><th>Relevance to inspection</th></tr></thead><tbody>
+    <tr><td><b>Minimum feature size (MFS)</b></td><td>The smallest feature the printer can make; it decides manufacturability</td><td>Chilukuri 2024 uses MFS as the only manufacturability metric. Their 2,735 designs range from 1.51 mm to 15.97 mm; the nozzle and motor limit is 2 mm. Mean normalised MFS of their original designs was 0.328. [read]</td><td>Thin struts and walls are the first thing to check. Likely the main fault feature. Confirm in our data.</td></tr>
+    <tr><td><b>Pore (cavity) size and connectivity</b></td><td>Lets liquid and nutrients in and bacteria colonise the inside; blocked or tiny pores clog</td><td>Chilukuri lists minimum cavity size and connectivity as important but unexplored metrics. Santoro 2017 names clogging, diffusion limits and dead zones at scale. Calignano 2015 chose lattices for open-channel flow. [read]</td><td>Blocked or trapped pores are a key fault; interior ones are only reachable by CT in the literature collected so far.</td></tr>
+    <tr><td><b>Specific surface area</b></td><td>More area gives more room for biofilm</td><td>Chilukuri lists surface area. Santoro 2017 cites a study with no correlation between real surface area and current, and biofilm only on the outer surfaces of a 3D felt. So more area is not automatically better. [read]</td><td>Surface area follows from strut and pore sizes, so it can be estimated from the same measurements.</td></tr>
+    <tr><td><b>Electrical resistance and conductivity</b></td><td>Electrons must reach the current collector with little loss</td><td>Chilukuri lists electrical resistance. You 2020: uncoated PLA made no power; C-PLA coated double had about 240-370 ohm over 1 cm. Calignano 2015: anode resistance about 0.92 ohm. [partial reads]</td><td>Coating thickness and continuity are inspection targets, but they are not visible in an STL-based geometry scan.</td></tr>
+    <tr><td><b>Coating and pore blocking</b></td><td>Coatings make plastic conductive but can fill the pores</td><td>You 2020: extra coats started blocking holes; nickel particles came off in the liquid. [partial read]</td><td>A real source of blocked-pore faults after printing.</td></tr>
+    <tr><td><b>Surface properties</b></td><td>Roughness, charge and chemistry decide how well bacteria stick</td><td>Santoro 2017 lists surface charge, hydrophilicity, functional groups and roughness. Calignano 2015 used shot peening to clean and finish. [read]</td><td>Roughness and trapped powder are possible inspection features.</td></tr>
+    <tr><td><b>Material, cost and durability</b></td><td>Decides whether printed anodes are practical</td><td>Chung and Dhar 2021: printed parts have high cost, low durability and biocompatibility concerns; metal printing is very expensive. Calignano 2015: aluminium may corrode. [partial reads]</td><td>Context for why fast, cheap inspection matters.</td></tr>
+  </tbody></table></div>
+
+  <h3>5. What the instructor-group paper adds (most relevant to the dataset)</h3>
+  <ul>
+    <li><b>Chilukuri, Song, Kang, Jin (2024)</b>, ASME MSEC2024-125075, "Generating optimized 3D designs for manufacturing using a guided voxel diffusion model". It builds new MFC anode designs that are easier to manufacture. [read pages 1-10]</li>
+    <li>Their data: <b>2,735 anode designs</b> (cell counts 1 and 2), stored as STL and labelled with minimum feature size from simulations. Voxel grid 64 x 64 x 64 with 0.2 mm voxels (that would be a 12.8 mm cube, [Medium: not confirmed that the part was rescaled]).</li>
+    <li>Their design source is reference [12] in that paper: <b>Kang, Deng and Jin (2021), JCISE 21(6):061008</b>. That is the same paper the project PDF cites. I confirmed the DOI in Crossref but have not read it.</li>
+    <li>A surrogate model (ResNet-50 based) predicts MFS with r-squared 0.96; guided generation raised the mean normalised MFS from 0.54 to 0.63 versus unguided. [read]</li>
+    <li>Authors' limits: small dataset; only MFS considered; minimum cavity size, connectivity, resistance and surface area left for future work. [read]</li>
+  </ul>
+  <div class="warnbox"><b>Discrepancies and hypotheses to check:</b>
+    <ul>
+      <li>The project PDF says 1000 designs with a 50/50 split. Chilukuri uses 2,735 designs with a continuous MFS label. Our set may be a subset, with FEASIBILITY derived from MFS (for example MFS against a 2 mm limit). That is a hypothesis [Low]; check against the Excel when the data is opened.</li>
+      <li>If feature sizes are millimetres (1.5-16 mm) rather than the 0.2-0.3 mm struts in much of the CT literature, the CT thin-strut accuracy dispute matters much less. Confirm on our STLs.</li>
+      <li>The x1 codes B, D, P, G, I could be lattice types (D = Diamond, P = Primitive, G = Gyroid, I = IWP are TPMS names). B is unknown. [Low: guess from letters; ask the professor.]</li>
+    </ul></div>
+
+  <h3>6. Expert and author views</h3>
+  <p class="note">These are published statements by the authors of the papers I read, not interviews. I did not find open-access opinion pieces by well-known MFC researchers (for example Logan or Rabaey); those are usually paywalled.</p>
+  <ul>
+    <li><b>Santoro, Arbizzani, Erable, Ieropoulos (2017):</b> MFC output is "orders of magnitude lower" than chemical fuel cells; the oxygen reduction reaction at the cathode is the bottleneck; electrode-bacteria interaction is not fully understood; MFCs sit at a low technology readiness level, and many demonstrations are proof of concept. They call MFCs a platform technology (sensing, energy from waste, sanitation). [read]</li>
+    <li><b>Chung and Dhar (2021):</b> direct 3D printing of large-scale systems is "not yet feasible"; drawbacks are high cost, low durability, biocompatibility and electrochemical properties; they propose pairing printing with CFD and machine learning, but note a lack of training data. [partial read]</li>
+    <li><b>You et al. (2020):</b> a fully printed MFC works, but the printed cathodes were the bottleneck, and start-up was slower than for conventional MFCs. [partial read]</li>
+    <li><b>Calignano et al. (2015):</b> the cathode, not the printed anode, limited performance; long-term use needs an improved cathode; real wastewater would need pretreatment. [partial read]</li>
+    <li><b>Jin group (2024):</b> manufacturers lack design knowledge for AM, which limits adoption. [read]</li>
+  </ul>
+  <p><b>Reading across them:</b> the anode geometry is only one limit in an MFC, and the cathode usually limits power. For this project the useful points are that geometry decides manufacturability (MFS, pores, connectivity) and that printing faults in those features are what an inspection system must find. [Medium: my synthesis]</p>
+
+  <h3>7. What this means for the inspection plan (provisional)</h3>
+  <ul>
+    <li>Likely must-measure features: strut and wall thickness (MFS), pore size, pore connectivity or blocked pores, surface area (derived), and coating or powder residue. Confirm with the data.</li>
+    <li>If MFS is millimetre-scale, the resolution needed from a scanner is far less demanding than for the sub-0.3 mm struts in much of the CT literature, so surface scanners become more plausible for outer features. Interior pores still need a method that sees inside. [Medium]</li>
+  </ul>
+
+  <h3>8. Sources and reading status</h3>
+  <div class="tblwrap"><table><thead><tr><th>Paper</th><th>Link</th><th>Read status</th></tr></thead><tbody>
+    <tr><td>Chilukuri, Song, Kang, Jin 2024, ASME MSEC2024-125075</td><td><a href="https://par.nsf.gov/servlets/purl/10510447" target="_blank" rel="noopener">NSF PAR PDF</a></td><td>Pages 1-10 read directly by Claude</td></tr>
+    <tr><td>Kang, Deng, Jin 2021, JCISE 21(6) 061008 (source of the anode designs)</td><td><a href="https://doi.org/10.1115/1.4050984" target="_blank" rel="noopener">10.1115/1.4050984</a></td><td>DOI verified; not read yet</td></tr>
+    <tr><td>Santoro et al. 2017, J. Power Sources 356:225-244</td><td><a href="https://doi.org/10.1016/j.jpowsour.2017.03.109" target="_blank" rel="noopener">10.1016/j.jpowsour.2017.03.109</a></td><td>Most of the text read through a fetch tool; reference list not read</td></tr>
+    <tr><td>Chung and Dhar 2021, Front. Energy Res. 9:679061</td><td><a href="https://doi.org/10.3389/fenrg.2021.679061" target="_blank" rel="noopener">10.3389/fenrg.2021.679061</a></td><td>About 40k of 110k characters read verbatim; rest summarised by tool</td></tr>
+    <tr><td>You et al. 2020, Molecules 25(13):3051</td><td><a href="https://doi.org/10.3390/molecules25133051" target="_blank" rel="noopener">10.3390/molecules25133051</a></td><td>About 40k of 67k characters read verbatim</td></tr>
+    <tr><td>Calignano et al. 2015, Sci. Rep. 5:17373</td><td><a href="https://doi.org/10.1038/srep17373" target="_blank" rel="noopener">10.1038/srep17373</a></td><td>About 40k of 84k characters read verbatim; tool summary conflicted with the text in places, so only verbatim values are used</td></tr>
+  </tbody></table></div>
+  <p class="note">Not found: Sun et al. 2021 and Zeng et al. 2024 (cited on slide 5 of the PDF). Searches did not identify them; ask the professor or look in the Kang 2021 reference list.</p>
+</div></section>
 
 <section id="r-results"><h2>Results register (what is done and can go into the report)</h2><div class="body">
   <div class="row"><select id="rsec"><option value="">All report sections</option></select><span id="rcount" class="note"></span></div>
@@ -390,7 +476,10 @@ var RESULTS=[
  ['2026-10-31','Literature review','Contact probes reach only exterior surfaces of lattices; interior needs CT.','du Plessis 2021','[Medium]; closed access, partial read'],
  ['2026-10-31','Literature review','Resonance methods detect that struts are missing but cannot count or locate them (global pass/fail).','McGuigan 2021; Obaton 2021','[Medium]'],
  ['2026-10-31','Literature review','No retrieved paper tests a post-process structured-light, laser-line or photogrammetry scan on a lattice. Their capability is physics-based, not literature-backed.','Evidence file gaps','[Medium]; may be a search limit'],
- ['2026-10-31','Literature review','No retrieved paper uses a TPMS or sheet lattice for inspection metrology; all specimens are strut-based.','Evidence file limitation 4','[Medium]']
+ ['2026-10-31','Literature review','No retrieved paper uses a TPMS or sheet lattice for inspection metrology; all specimens are strut-based.','Evidence file limitation 4','[Medium]'],
+ ['2026-11-16','Problem formulation','Product background compiled: what the MFC anode is, how it works, how it is made, and its most significant aspects (see The anode section).','Santoro 2017; Chung and Dhar 2021; You 2020; Calignano 2015; Chilukuri 2024','Partial reads; verify numbers'],
+ ['2026-11-16','Problem formulation','The instructor-group paper (Chilukuri 2024) uses minimum feature size (MFS) as the manufacturability metric: 2,735 anode designs, MFS 1.51-15.97 mm, nozzle and motor limit 2 mm. Its design source is Kang, Deng and Jin 2021, the paper cited in the project PDF.','Chilukuri 2024 pp. 1-10 (read directly)','[Verified] read; link to our 1000-design set is a hypothesis [Low]'],
+ ['2026-11-16','Methodology','If feasibility in our dataset is tied to MFS in millimetres, the CT thin-strut accuracy dispute (sub-0.3 mm struts) matters much less, and surface scanners become more plausible for outer features. Check on the STLs and Excel.','Chilukuri 2024 vs evidence file','[Medium]; needs data']
 ];
 (function(){
   var sel=document.getElementById('rsec'),secs=[];
@@ -409,6 +498,7 @@ var CONCL=[
  'Provisional eliminations: contact CMM (exterior only, slow), photogrammetry (lowest accuracy, no lattice evidence), resonance/ultrasonic/thermography (global result, cannot locate or count). [Medium]',
  'In-process imaging sits inside the printer, so it does not fit a separate robotic inspection cell unless the professor says otherwise. [Medium]',
  'Candidate set going into the layout stage: structured-light or laser-line surface scan, X-ray CT, and a hybrid (surface scan on every part, CT on flagged parts). [Medium]',
+ 'New 2026-11-16: the instructor-group paper uses millimetre-scale minimum feature size (1.51-15.97 mm) as the manufacturability metric, so the sub-0.3 mm CT accuracy dispute may not apply to our parts. [Medium, confirm on the STLs]',
  'If the data shows interior features drive infeasibility, CT is required and speed must come from the hybrid; if exterior features drive it, a robot-mounted surface scanner can win. [Medium]'
 ];
 document.getElementById('conclist').innerHTML=CONCL.map(function(c){return'<li>'+esc(c)+'</li>'}).join('');
@@ -480,7 +570,7 @@ var EGAPS=[
  ['e2','No TPMS / sheet-lattice inspection metrology; all retrieved lattices are strut-based.','your part geometry'],
  ['e3','No direct comparison of a surface scanner against CT on the same lattice.','the actual method decision'],
  ['e4','Eddy-current branch of M6 not populated; thermography only in-process.','low priority'],
- ['e5','CT accuracy on struts below about 300 um is disputed; strut size of the dataset unknown.','needs the STL data']
+ ['e5','CT accuracy on struts below about 300 um is disputed; strut size of the dataset unknown (Chilukuri 2024 reports MFS of 1.51-15.97 mm for their set, so this may not apply).','needs the STL data']
 ];
 (function(){
   function build(id,sumId,arr,key,label){
@@ -502,7 +592,12 @@ var SRC=[
  ['MSE_Project_Handoff.md','../MSE_Project_Handoff.md','Master chat handoff: sensing options, research gaps','local',1],
  ['MSE_Project_MASTER.md','../MSE_Project_MASTER.md','Complete record of everything in this project','local',1],
  ['Feature by method.md (literature evidence file)','../Claude/Feature by method.md','Evidence for 7 methods x 12 features; cross-checked in MASTER sec. 18','local',1],
- ['Kang, Deng, Jin 2021, ASME JCISE 21(6) 061008','https://doi.org/10.1115/1.4050984','Instructor reference (web search did not find it directly)','ext',0],
+ ['Kang, Deng, Jin 2021, ASME JCISE 21(6) 061008','https://doi.org/10.1115/1.4050984','Instructor reference; source of the anode designs (DOI verified in Crossref; not read yet)','ext',0],
+ ['Chilukuri, Song, Kang, Jin 2024, ASME MSEC2024-125075','https://par.nsf.gov/servlets/purl/10510447','Instructor-group paper on MFC anode manufacturability (read by Claude)','ext',0],
+ ['Santoro et al. 2017, MFC review','https://doi.org/10.1016/j.jpowsour.2017.03.109','How an MFC and its anode work','ext',0],
+ ['Chung and Dhar 2021, 3D printing for microbial electrochemical technologies','https://doi.org/10.3389/fenrg.2021.679061','Printed MFC electrodes','ext',0],
+ ['You et al. 2020, complete MFC by additive layer manufacturing (DOI)','https://doi.org/10.3390/molecules25133051','Printed anode, coating, results','ext',0],
+ ['Calignano et al. 2015, additive manufacturing of an MFC','https://doi.org/10.1038/srep17373','SLM lattice anode','ext',0],
  ['You et al. 2020, complete MFC by additive layer manufacturing','https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7412530/','Printed MFC background','ext',0],
  ['3D printed porous copper electrodes for MFC (Frontiers 2018)','https://www.frontiersin.org/journals/energy-research/articles/10.3389/fenrg.2018.00050/pdf','Printed MFC electrodes','ext',0],
  ['3D printed porous carbon anode for MFC (DLP)','https://www.eng.uwo.ca/nanoenergy/publications/2018/PDF/3D-Printed-Porous-Carbon-Anode-for-Enhanced-Power-Generation-in-Microbial-Fuel-Cell,.pdf','Printed MFC anodes','ext',0],
@@ -554,12 +649,12 @@ document.getElementById('rulelist').innerHTML=RULES.map(function(r){return'<li>'
 var OPEN=[
  'Are the lattice STLs the parts to inspect, or only examples?',
  'What exactly does "simulate the dataset" mean? (my reading: virtual scans of the STLs)',
- 'Which AM process was used? The PDF never says.',
+ 'Which AM process was used? The PDF never says; Chilukuri 2024 mentions a 2 mm nozzle (extrusion-type?), confirm with the professor.',
  'How deep must the robot simulation be; any required or forbidden software?',
  'Is the sample STL-processing code from slide 6 provided? (not checked; data unopened)',
  'Final choice of simulation software.',
- 'What are the minimum strut and wall sizes in the STLs? (decides whether CT thin-strut error applies)',
- 'Is the lattice TPMS/sheet-like or strut-based, and what are the x1 categories B, D, P, G, I?',
+ 'What are the minimum strut and wall sizes in the STLs? (Chilukuri 2024: MFS 1.51-15.97 mm for their 2,735 designs; check our 1000)',
+ 'Is the lattice TPMS/sheet-like or strut-based, and what are the x1 categories B, D, P, G, I? (D, P, G, I could be Diamond, Primitive, Gyroid, IWP; B unknown)',
  'Which features actually drive FEASIBILITY? (needs the data; decides the scan method)'
 ];
 (function(){

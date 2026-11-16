@@ -380,6 +380,15 @@ flowchart TD
 </div></section>
 
 <section id="s-batch"><h2>Virtual batch: where the defects come from (keep all options)</h2><div class="body">
+  <div class="warnbox"><b>Chosen 2026-11-16 (you asked Claude to pick; change it if you disagree): Option C, kept small.</b>
+    <ul>
+      <li><b>Good parts:</b> feasible designs from the dataset (real geometry, all four rules satisfied).</li>
+      <li><b>Defective parts, type 1 (design violations):</b> infeasible designs from the dataset, labelled by which rule they break (d1, d2, d3, d4). Free ground truth.</li>
+      <li><b>Defective parts, type 2 (print errors):</b> feasible designs with injected faults that cross the same limits, in graded sizes around the 2 mm limit: thinned struts, narrowed or blocked cavities, a cut strut that disconnects the solid, a wall that cuts cavities off.</li>
+      <li><b>Prevalence:</b> sweep, for example 5%, 10% and 50% defective (50% is the dataset's own mix).</li>
+      <li><b>Why:</b> the labels alone are design faults, not printing errors, so type 1 alone does not test an inspection system; injection alone invents defects without a record. Together they give real geometry, exact ground truth and realistic print faults, with only four fault types (one per rule).</li>
+      <li><b>Risk:</b> injection needs a voxel tool and literature to justify sizes; if time runs short, drop to type 1 only (Option A) and say so in the report.</li>
+    </ul></div>
   <div class="tblwrap"><table><thead><tr><th>Option</th><th>What it is</th><th>Pros</th><th>Cons</th></tr></thead><tbody>
     <tr><td><b>A. Use the dataset labels</b></td><td>1000 real designs; infeasible = defective. The data and Kang 2021 show what makes a design infeasible: minimum feature size below 2 mm, minimum cavity size below 2 mm, disconnected solid, disconnected cavities (see Report tab, dataset section). These are design-rule violations, not print defects.</td><td>Real geometry; ground truth is known exactly; no invented defect model.</td><td>Defects are design-level, not random print flaws; 50% defect rate is unrealistically high; defect location is not marked.</td></tr>
     <tr><td><b>B. Inject defects into the STLs</b></td><td>Take good designs and add faults at chosen rates and sizes: thin or broken struts, blocked pores, warping, surface roughness.</td><td>Full control of type, size, location and prevalence; realistic low defect rates.</td><td>Needs literature to justify defect types and sizes; more work.</td></tr>
@@ -614,7 +623,7 @@ var PRETTY={x2:'x2 cells',x3:'x3 offset',abs_x3:'|x3|',x4:'x4 layer',x5_rot90:'x
 /* ---------- simulation tab checklist ---------- */
 var SIMSTEPS=[
  ['m1','Confirm with Prof. Jin that "simulate the dataset" means a virtual batch run through the inspection system','confirm'],
- ['m2','Choose the batch option: A dataset labels, B injected defects, or C both','decision'],
+ ['m2','Batch option chosen: C (dataset labels plus four injected fault types); confirm or change','decision'],
  ['m3','Fix defect types, sizes and prevalence (real lines have few defects)','decision'],
  ['m4','Define a detection probability per method and defect type (from the capability matrix and scan geometry)','model'],
  ['m5','Choose simulation tools (timing model and scan geometry)','tools'],

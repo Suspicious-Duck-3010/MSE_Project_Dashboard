@@ -380,7 +380,7 @@ flowchart TD
 </div></section>
 
 <section id="s-batch"><h2>Virtual batch: where the defects come from (keep all options)</h2><div class="body">
-  <div class="warnbox"><b>Chosen 2026-11-16 (you asked Claude to pick; change it if you disagree): Option C, kept small.</b>
+  <div class="warnbox"><b>Accepted by you 2026-11-16 (Claude picked it): Option C, kept small.</b>
     <ul>
       <li><b>Good parts:</b> feasible designs from the dataset (real geometry, all four rules satisfied).</li>
       <li><b>Defective parts, type 1 (design violations):</b> infeasible designs from the dataset, labelled by which rule they break (d1, d2, d3, d4). Free ground truth.</li>
@@ -623,7 +623,7 @@ var PRETTY={x2:'x2 cells',x3:'x3 offset',abs_x3:'|x3|',x4:'x4 layer',x5_rot90:'x
 /* ---------- simulation tab checklist ---------- */
 var SIMSTEPS=[
  ['m1','Confirm with Prof. Jin that "simulate the dataset" means a virtual batch run through the inspection system','confirm'],
- ['m2','Batch option chosen: C (dataset labels plus four injected fault types); confirm or change','decision'],
+ ['m2','Batch option C accepted (dataset labels plus four injected fault types)','decision',true],
  ['m3','Fix defect types, sizes and prevalence (real lines have few defects)','decision'],
  ['m4','Define a detection probability per method and defect type (from the capability matrix and scan geometry)','model'],
  ['m5','Choose simulation tools (timing model and scan geometry)','tools'],
@@ -632,7 +632,7 @@ var SIMSTEPS=[
  ['m8','Plot faults found versus time and verify the results manually','analysis']
 ];
 (function(){
-  var st=ls('mse_sim',{}),box=document.getElementById('simchk');
+  var st=ls('mse_sim',{}),box=document.getElementById('simchk');SIMSTEPS.forEach(function(g){if(g[3]&&st[g[0]]===undefined)st[g[0]]=true});
   function draw(){var h='',n=0;SIMSTEPS.forEach(function(g){var d=!!st[g[0]];if(d)n++;
     h+='<div class="chk'+(d?' done':'')+'"><input type="checkbox" id="c_'+g[0]+'" data-id="'+g[0]+'" '+(d?'checked':'')+'><label for="c_'+g[0]+'">'+esc(g[1])+' <span class="chip">'+esc(g[2])+'</span></label></div>'});
     box.innerHTML=h;document.getElementById('simsum').textContent=n+' of '+SIMSTEPS.length+' done';
@@ -667,6 +667,7 @@ var RESULTS=[
  ['2026-11-16','Results','Strongest associations with FEASIBILITY: d4 (0.60), x2 (-0.58), d3 (0.58), single-piece mesh (0.53), lattice type x1 (Cramer V 0.40). Not significant: x4, x5, x3 (linear); x3 matters non-linearly (feasible about 60-65% near 0, 20-24% at both extremes).','Analysis/correlation_results.json','[High] statistics; Spearman, Bonferroni-corrected'],
  ['2026-11-16','Results','Read Kang, Deng and Jin 2021 (the paper cited in the project PDF). It defines the dataset: x1 unit cell type (Primitive, Gyroid, I-WP, Diamond, OCTO, BCC), x2 unit cells across 20 mm (1-5), x3 volume fraction factor, x4 layer thickness, x5 and x6 X and Y rotation; d1-d4 are the four feasibility features: minimum feature size, structure connectivity, minimum cavity size, cavity connectivity (limits: over 2 mm, true, over 2 mm, true). FFF printing is assumed. Feasibility is a design-rule result on the voxel model, not a record of printing errors.','Kang 2021 Tables 1-2, sections 3-4','[High]; column order d1=e1.. inferred from the data'],
  ['2026-11-16','Results','Independent check of d1 and d3 on 40 designs (20 feasible, 20 infeasible), voxelised at 0.2 mm from the STLs: d1 tracks the solid size (rho 0.80) and d3 the cavity size (rho 0.83), supporting the pairing; but the absolute values and the 2 mm threshold were not reproduced by my crude measurement (the opening-based size estimate failed; the largest-inscribed-ball estimate is 1.4 to 1.7 times smaller). So d1 and d3 are related to solid and cavity size but their exact definition is unknown. Kang 2021 or the professor should confirm.','Analysis/verify_feature_sizes.py; verify_feature_sizes.csv','[Medium]; small sample, non-watertight meshes, voxel pitch 0.2 mm'],
+ ['2026-11-16','Methodology','Defect model for the simulated batch: Option C, accepted by the user. Good parts = feasible designs; defective type 1 = infeasible designs labelled by broken rule; type 2 = feasible designs with injected print errors (thin struts, narrowed or blocked cavities, cut strut, cavities cut off) at sizes around the 2 mm limit; prevalence swept. Fallback: type 1 only.','User decision 2026-11-16; MASTER sec. 24','Decided; not confirmed by professor'],
  ['2026-11-16','Methodology','Interpretation of the project: simulate a batch of parts with and without defects, run it through the inspection system, measure time and defects caught (user reading of slide 4; not confirmed by the professor). Planned in the Simulation plan tab.','User, chat 2026-11-16','Working interpretation'],
  ['2026-11-16','Methodology','If feasibility in our dataset is tied to MFS in millimetres, the CT thin-strut accuracy dispute (sub-0.3 mm struts) matters much less, and surface scanners become more plausible for outer features. Check on the STLs and Excel.','Chilukuri 2024 vs evidence file','[Medium]; needs data']
 ];
